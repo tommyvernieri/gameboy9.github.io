@@ -3,7 +3,8 @@
 <link rel="stylesheet" href="css/w3.css">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TGP Knockout Calculator</title>
 </head>
 
 <body>
@@ -35,7 +36,7 @@
 		</datalist>
 	</div>
 	
-	<div class="w3-row">
+	<div class="w3-row w3-container">
 		<table class="w3-table w3-third">
 			<tr>
 				<th>2P Groups</th>
@@ -66,51 +67,80 @@
 		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Knockout Tournament</button>
 	</div>
 
-	<div class="w3-row">
-		<table class="w3-table w3-striped w3-quarter" style="margin-top: 16px;">
-			<tr style="border-top: 1px solid black;">
-				<td>Meaningful Games</td><td><div class="w3-right-align" id="MeaningfulGames"></div></td>
-			</tr>
-			<tr style="border-bottom: 1px solid black;">
-				<td>Approximate TGP</td><td><div class="w3-right-align" id="ApproxTGP"></div></td>
-			</tr>
-			<tr>
-				<td>Average Rounds</td><td><div class="w3-right-align" id="AvgRounds"></div></td>
-			</tr>
-			<tr>
-				<td>Least / Most Rounds</td><td><div class="w3-right-align" id="ExtremeRounds"></div></td>
-			</tr>
-			<tr style="border-bottom: 1px solid black;">
-				<td>5th / 95th percentile</td><td><div class="w3-right-align" id="ReasonableRounds"></div></td>
-			</tr>
-			<tr id="players1">
-				<td>Avg end players</td><td><div class="w3-right-align" id="AvgPlayers"></div></td>
-			</tr>
-			<tr>
-				<td>Least / Most players</td><td><div class="w3-right-align" id="ExtremePlayers"></div></td>
-			</tr>
-			<tr style="border-bottom: 1px solid black;">
-				<td>5th / 95th percentile:</td><td><div class="w3-right-align" id="ReasonablePlayers"></div></td>
-			</tr>
-			<tr>
-				<td style="width: 50%">Avg Games - 2P</td>
-				<td style="width: 50%"><div class="w3-right-align" id="2pGames"></div></td>
-			</tr>
-			<tr>
-				<td>Avg Games - 3P</td><td><div class="w3-right-align" id="3pGames"></div></td>
-			</tr>
-			<tr>
-				<td>Avg Games - 4P</td><td><div class="w3-right-align" id="4pGames"></div></td>
-			</tr>
-			<tr style="border-bottom: 1px solid black;">
-				<td>Avg Games - Total</td><td><div class="w3-right-align" id="TotalGames"></div></td>
-			</tr>
-		</table>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2"><b>Results</b></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" style="visibility: hidden;" id="qualifying"><b>Qualifying</b></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" style="visibility: hidden;" id="finals"><b>Finals</b></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Meaningful Games</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="MeaningfulGames"> </div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="MeaningfulGames2"> </div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Approximate TGP</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ApproxTGP"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ApproxTGP2"></div>
+	</div>
+	<div class="w3-row w3-container" style="visibility: hidden;">
+		<div class="w3-col s4 m4 l2">Total TGP</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP2"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-top">Average Rounds</div>
+		<div class="w3-col s4 m4 l1 w3-border-top w3-right-align" id="AvgRounds">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-border-top w3-right-align" id="AvgRounds2">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Least / Most rounds</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremeRounds"> </div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremeRounds2"> </div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-bottom">5th / 95th percentile</div>
+		<div class="w3-col s4 m4 l1 w3-right-align w3-border-bottom" id="ReasonableRounds">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align w3-border-bottom" id="ReasonableRounds2">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Average end players</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="AvgPlayers"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="AvgPlayers2"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Least / Most players</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremePlayers"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremePlayers2"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-bottom">5th / 95th percentile</div>
+		<div class="w3-col s4 m4 l1 w3-border-bottom w3-right-align" id="ReasonablePlayers">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-border-bottom w3-right-align" id="ReasonablePlayers2">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Games - 2P</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="2pGames"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="2pGames2"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Games - 3P</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="3pGames"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="3pGames2"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Games - 4P</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="4pGames"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="4pGames2"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Games - Total</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalGames"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalGames2"></div>
 	</div>
 	
 	<div class="w3-container" style="margin-top: 32px;">
 		<h6 class="w3-opacity">
-			This calculator is written by Patrick F. aka gameboyf9, and uses 10,000 simulations AND IS IN BETA.  You are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there are any issues or problems.
+			This calculator is written by Patrick F. aka gameboyf9, uses 10,000 simulations AND IS IN BETA.  All are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there any problems or inaccuracies are found.
 			<br>This is based off Arno N's <a href="https://strikestgp.slapsave.com/">TGP Calculator</a>, typically used by the IFPA to determine TGP percentage.
 			<br>In turn, that calculator was based off of Keith P. Johnson's <a href="http://tiltforums.com/t/thoughts-on-group-knockout-strikes-format-w-3-strikes-per-group/2166/119">strikes simulator</a>.
 			<br>Many thanks to both for their contributions.
