@@ -1,36 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="css/w3.css">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 
 <body>
-	<div>
-		<label for="playerCount">Number of players (2-1000):</label>
-		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="50" />
-	</div>
-		
-	<div>
-		<label for="groupSize">Group size:</label>
-		<input list="groupSizeList" id="groupSize" name="groupSize" placeholder="4" value="4" />
-		<datalist id="groupSizeList">
-		   <option>2
-		   <option>3
-		   <option>4
-		</datalist>
-	</div>
-	<div>
-		<label for="strikes">Number of strikes (1-100):</label>
-		<input type="number" id="strikes" name="strikes" min="1" max="100" value="4" />
+	<div class="w3-top w3-bar w3-black">
+		<a href="#knockout" class="w3-bar-item w3-button">Knockout</a>
 	</div>
 
-	<div>
-		<label for="playersLeft">Number of players left (1-1000):</label>
+	<div class="w3-container" style="margin-top: 64px;">
+		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="50" />
+		<label for="playerCount">contestants in </label>
+		<input type="number" id="playerCount" name="playerCount" min="2" max="4" value="4" />
+		<label for="playerCount"> player groups.  Eliminations happen at </label>
+		<input type="number" id="strikes" name="strikes" min="1" max="100" value="4" />
+		<label for="strikes">strikes and will continue until there are </label>
 		<input type="number" id="playersLeft" name="playersLeft" min="1" max="1000" value="1" />
+		<label for="playersLeft"> players left.</label>
 	</div>
 		
-	<div>
+	<div class="w3-container" style="margin-top: 16px;">
 		<label for="commonFormats">Common Formats:</label>
 		<input list="commonFormatList" id="commonFormats" name="commonFormats" placeholder="Fair strikes" value="Fair strikes" />
 		<datalist id="commonFormatList">
@@ -43,44 +35,82 @@
 		</datalist>
 	</div>
 		
-	<div>
-		<label><b>Strike distribution:</b></label>
-	</div>
-
-	<div>
-		<label>2P Groups:</label>
-		<input type="number" id="p21" name="p21" min="2" max="100" value="0" />
-		<input type="number" id="p22" name="p22" min="2" max="100" value="2" />
-	</div>
-
-	<div>
-		<label>3P Groups:</label>
-		<input type="number" id="p31" name="p31" min="2" max="100" value="0" />
-		<input type="number" id="p32" name="p32" min="2" max="100" value="1" />
-		<input type="number" id="p33" name="p33" min="2" max="100" value="2" />
-	</div>
-
-	<div>
-		<label>4P Groups:</label>
-		<input type="number" id="p41" name="p41" min="2" max="100" value="0" />
-		<input type="number" id="p42" name="p42" min="2" max="100" value="1" />
-		<input type="number" id="p43" name="p43" min="2" max="100" value="1" />
-		<input type="number" id="p44" name="p44" min="2" max="100" value="2" />
-	</div>
-
-	<div>
-		<button type="button" onclick="calcKnockoutTournament()">Calculate TGP</button>
-	</div>
+	<table class="w3-table w3-third">
+		<tr>
+			<th>2P Groups</th>
+			<th>3P Groups</th>
+			<th>4P Groups</th>
+		</tr>
+		<tr>
+			<td>		
+				<input type="number" id="p21" name="p21" min="0" max="100" value="0" />
+				<input type="number" id="p22" name="p22" min="1" max="100" value="2" />
+			</td>
+			<td>		
+				<input type="number" id="p31" name="p31" min="0" max="100" value="0" />
+				<input type="number" id="p32" name="p32" min="0" max="100" value="1" />
+				<input type="number" id="p33" name="p33" min="1" max="100" value="2" />
+			</td>
+			<td>		
+				<input type="number" id="p41" name="p41" min="0" max="100" value="0" />
+				<input type="number" id="p42" name="p42" min="0" max="100" value="1" />
+				<input type="number" id="p43" name="p43" min="0" max="100" value="1" />
+				<input type="number" id="p44" name="p44" min="1" max="100" value="2" />
+			</td>
+		</tr>
+	</table>
 	
-	<div>
-		<label>Result:</label>
-		<textarea id="tgpResult" name="tgpResult" rows="17" cols="80"></textarea>
+	<div class="w3-container">
+		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Knockout Tournament</button>
 	</div>
-	<div>
-	<br>This calculator is written by Patrick F. aka gameboyf9, and uses 10,000 simulations AND IS IN BETA.  You are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there are any issues or problems.
-	<br>This is based off Arno N's <a href="https://strikestgp.slapsave.com/">TGP Calculator</a>, typically used by the IFPA to determine TGP percentage.
-	<br>In turn, that calculator was based off of Keith P. Johnson's <a href="http://tiltforums.com/t/thoughts-on-group-knockout-strikes-format-w-3-strikes-per-group/2166/119">strikes simulator</a>.
-	<br>Many thanks to both for their contributions.
+
+	<table class="w3-table w3-striped w3-quarter" style="margin-top: 16px;">
+		<tr style="border-top: 1px solid black;">
+			<td>Meaningful Games</td><td><div class="w3-right-align" id="MeaningfulGames"></div></td>
+		</tr>
+		<tr style="border-bottom: 1px solid black;">
+			<td>Approximate TGP</td><td><div class="w3-right-align" id="ApproxTGP"></div></td>
+		</tr>
+		<tr>
+			<td>Average Rounds</td><td><div class="w3-right-align" id="AvgRounds"></div></td>
+		</tr>
+		<tr>
+			<td>Least / Most Rounds</td><td><div class="w3-right-align" id="ExtremeRounds"></div></td>
+		</tr>
+		<tr style="border-bottom: 1px solid black;">
+			<td>5th / 95th percentile</td><td><div class="w3-right-align" id="ReasonableRounds"></div></td>
+		</tr>
+		<tr id="players1">
+			<td>Avg end players</td><td><div class="w3-right-align" id="AvgPlayers"></div></td>
+		</tr>
+		<tr>
+			<td>Least / Most players</td><td><div class="w3-right-align" id="ExtremePlayers"></div></td>
+		</tr>
+		<tr style="border-bottom: 1px solid black;">
+			<td>5th / 95th percentile:</td><td><div class="w3-right-align" id="ReasonablePlayers"></div></td>
+		</tr>
+		<tr>
+			<td style="width: 50%">Avg Games - 2P</td>
+			<td style="width: 50%"><div class="w3-right-align" id="2pGames"></div></td>
+		</tr>
+		<tr>
+			<td>Avg Games - 3P</td><td><div class="w3-right-align" id="3pGames"></div></td>
+		</tr>
+		<tr>
+			<td>Avg Games - 4P</td><td><div class="w3-right-align" id="4pGames"></div></td>
+		</tr>
+		<tr style="border-bottom: 1px solid black;">
+			<td>Avg Games - Total</td><td><div class="w3-right-align" id="TotalGames"></div></td>
+		</tr>
+	</table>
+	
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			This calculator is written by Patrick F. aka gameboyf9, and uses 10,000 simulations AND IS IN BETA.  You are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there are any issues or problems.
+			<br>This is based off Arno N's <a href="https://strikestgp.slapsave.com/">TGP Calculator</a>, typically used by the IFPA to determine TGP percentage.
+			<br>In turn, that calculator was based off of Keith P. Johnson's <a href="http://tiltforums.com/t/thoughts-on-group-knockout-strikes-format-w-3-strikes-per-group/2166/119">strikes simulator</a>.
+			<br>Many thanks to both for their contributions.
+		</h6>
 	</div>
 </body>
 </html>
@@ -94,28 +124,12 @@
 			this.score = 0;
 		}
 	}
-
-	function calcKnockoutTournament() {	
-		let players = parseInt(document.getElementById("playerCount").value);
-		let finalStrikes = parseInt(document.getElementById("strikes").value);
-		let finalPlayers = parseInt(document.getElementById("playersLeft").value);
+	
+	function calcKnockoutTournament(players, finalStrikes, finalPlayers, p21, p22, p31, p32, p33, p41, p42, p43, p44) {	
 		let strikeDist = [ 
-			[
-				parseInt(document.getElementById("p21").value),
-				parseInt(document.getElementById("p22").value),
-				parseInt(document.getElementById("p22").value),
-				parseInt(document.getElementById("p22").value)
-			], [
-				parseInt(document.getElementById("p31").value),
-				parseInt(document.getElementById("p32").value),
-				parseInt(document.getElementById("p33").value),
-				parseInt(document.getElementById("p33").value)
-			], [
-				parseInt(document.getElementById("p41").value),
-				parseInt(document.getElementById("p42").value),
-				parseInt(document.getElementById("p43").value),
-				parseInt(document.getElementById("p44").value)
-			]
+			[ p21, p22, p22, p22], 
+			[ p31, p32, p33, p33], 
+			[ p41, p42, p43, p44]
 		];
 
 		let topScore = 10000000.0;
@@ -219,21 +233,34 @@
 		roundResult.sort();
 		finalEndPlayers.sort();
 
-		document.getElementById("tgpResult").value = 
-			"Avg 2P games:  " + (playerGames[0] / iterations).toFixed(2) +
-			"\r\nAvg 3P games:  " + (playerGames[1] / iterations).toFixed(2) +
-			"\r\nAvg 4P games:  " + (playerGames[2] / iterations).toFixed(2) +
-			"\r\nAvg total games:  " + (totalGames / iterations).toFixed(2) +
-			"\r\n\r\nMeaningful games:  " + (roundAvg * totalTGP / totalGames).toFixed(2) + // Iterations not needed because of roundResult.Average()
-			"\r\nApprox. TGP:  " + (roundAvg * totalTGP / totalGames * 4 > 100 ? "100.00% max reached (" + (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%)" : (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%") +
-			"\r\n\r\nAverage rounds:  " + roundAvg.toFixed(2) +			
-			"\r\nLeast/Most rounds:  " + Math.min(...roundResult) + " / " + Math.max(...roundResult) +
-			"\r\n5th/95th percentile:  " + roundResult[pct5] + " / " + roundResult[pct95] +
-			(finalPlayers > 1 ? 
-				"\r\n\r\nAvg end players:  " + endPlayersAvg.toFixed(2) +
-				"\r\nLeast/Most players:  " + Math.min(...finalEndPlayers) + " / " + Math.max(...finalEndPlayers) +
-				"\r\n5th/95th percentile:  " + finalEndPlayers[pct5] + " / " + finalEndPlayers[pct95] 
-				: "");
+		document.getElementById("2pGames").innerHTML = (playerGames[0] / iterations).toFixed(2);
+		document.getElementById("3pGames").innerHTML = (playerGames[1] / iterations).toFixed(2);
+		document.getElementById("4pGames").innerHTML = (playerGames[2] / iterations).toFixed(2);
+		document.getElementById("TotalGames").innerHTML = (totalGames / iterations).toFixed(2);
+		document.getElementById("MeaningfulGames").innerHTML = (roundAvg * totalTGP / totalGames).toFixed(2);
+		document.getElementById("ApproxTGP").innerHTML = (roundAvg * totalTGP / totalGames * 4 > 100 ? "100.00% (maxed - " + (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%)" : (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%");
+		document.getElementById("AvgRounds").innerHTML = roundAvg.toFixed(2);
+		document.getElementById("ExtremeRounds").innerHTML = Math.min(...roundResult) + " / " + Math.max(...roundResult);
+		document.getElementById("ReasonableRounds").innerHTML = roundResult[pct5] + " / " + roundResult[pct95];
+		document.getElementById("AvgPlayers").innerHTML = endPlayersAvg.toFixed(2);
+		document.getElementById("ExtremePlayers").innerHTML = Math.min(...finalEndPlayers) + " / " + Math.max(...finalEndPlayers);
+		document.getElementById("ReasonablePlayers").innerHTML = finalEndPlayers[pct5] + " / " + finalEndPlayers[pct95];
+	}
+
+	function tgpButton() {
+		calcKnockoutTournament(parseInt(document.getElementById("playerCount").value),
+			parseInt(document.getElementById("strikes").value),
+			parseInt(document.getElementById("playersLeft").value),
+			parseInt(document.getElementById("p21").value),
+			parseInt(document.getElementById("p22").value),
+			parseInt(document.getElementById("p31").value),
+			parseInt(document.getElementById("p32").value),
+			parseInt(document.getElementById("p33").value),
+			parseInt(document.getElementById("p41").value),
+			parseInt(document.getElementById("p42").value),
+			parseInt(document.getElementById("p43").value),
+			parseInt(document.getElementById("p44").value)
+			)
 	}
 	
 	function getRandomInt(max) {
