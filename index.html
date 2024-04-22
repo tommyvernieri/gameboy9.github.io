@@ -7,11 +7,11 @@
 </head>
 
 <body>
-	<div class="w3-top w3-bar w3-black">
+	<div class="w3-row w3-top w3-bar w3-black">
 		<a href="#knockout" class="w3-bar-item w3-button">Knockout</a>
 	</div>
 
-	<div class="w3-container" style="margin-top: 64px;">
+	<div class="w3-container w3-row" style="margin-top: 64px;">
 		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="50" />
 		<label for="playerCount">contestants in </label>
 		<input type="number" id="playerCount" name="playerCount" min="2" max="4" value="4" />
@@ -22,7 +22,7 @@
 		<label for="playersLeft"> players left.</label>
 	</div>
 		
-	<div class="w3-container" style="margin-top: 16px;">
+	<div class="w3-container w3-row" style="margin-top: 16px;">
 		<label for="commonFormats">Common Formats:</label>
 		<input list="commonFormatList" id="commonFormats" name="commonFormats" placeholder="Fair strikes" value="Fair strikes" />
 		<datalist id="commonFormatList">
@@ -34,75 +34,79 @@
 		   <option>Oprah strikes
 		</datalist>
 	</div>
-		
-	<table class="w3-table w3-third">
-		<tr>
-			<th>2P Groups</th>
-			<th>3P Groups</th>
-			<th>4P Groups</th>
-		</tr>
-		<tr>
-			<td>		
-				<input type="number" id="p21" name="p21" min="0" max="100" value="0" />
-				<input type="number" id="p22" name="p22" min="1" max="100" value="2" />
-			</td>
-			<td>		
-				<input type="number" id="p31" name="p31" min="0" max="100" value="0" />
-				<input type="number" id="p32" name="p32" min="0" max="100" value="1" />
-				<input type="number" id="p33" name="p33" min="1" max="100" value="2" />
-			</td>
-			<td>		
-				<input type="number" id="p41" name="p41" min="0" max="100" value="0" />
-				<input type="number" id="p42" name="p42" min="0" max="100" value="1" />
-				<input type="number" id="p43" name="p43" min="0" max="100" value="1" />
-				<input type="number" id="p44" name="p44" min="1" max="100" value="2" />
-			</td>
-		</tr>
-	</table>
 	
-	<div class="w3-container">
+	<div class="w3-row">
+		<table class="w3-table w3-third">
+			<tr>
+				<th>2P Groups</th>
+				<th>3P Groups</th>
+				<th>4P Groups</th>
+			</tr>
+			<tr>
+				<td>		
+					<input type="number" id="p21" name="p21" min="0" max="100" value="0" />
+					<input type="number" id="p22" name="p22" min="1" max="100" value="2" />
+				</td>
+				<td>		
+					<input type="number" id="p31" name="p31" min="0" max="100" value="0" />
+					<input type="number" id="p32" name="p32" min="0" max="100" value="1" />
+					<input type="number" id="p33" name="p33" min="1" max="100" value="2" />
+				</td>
+				<td>		
+					<input type="number" id="p41" name="p41" min="0" max="100" value="0" />
+					<input type="number" id="p42" name="p42" min="0" max="100" value="1" />
+					<input type="number" id="p43" name="p43" min="0" max="100" value="1" />
+					<input type="number" id="p44" name="p44" min="1" max="100" value="2" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div class="w3-row w3-container">
 		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Knockout Tournament</button>
 	</div>
 
-	<table class="w3-table w3-striped w3-quarter" style="margin-top: 16px;">
-		<tr style="border-top: 1px solid black;">
-			<td>Meaningful Games</td><td><div class="w3-right-align" id="MeaningfulGames"></div></td>
-		</tr>
-		<tr style="border-bottom: 1px solid black;">
-			<td>Approximate TGP</td><td><div class="w3-right-align" id="ApproxTGP"></div></td>
-		</tr>
-		<tr>
-			<td>Average Rounds</td><td><div class="w3-right-align" id="AvgRounds"></div></td>
-		</tr>
-		<tr>
-			<td>Least / Most Rounds</td><td><div class="w3-right-align" id="ExtremeRounds"></div></td>
-		</tr>
-		<tr style="border-bottom: 1px solid black;">
-			<td>5th / 95th percentile</td><td><div class="w3-right-align" id="ReasonableRounds"></div></td>
-		</tr>
-		<tr id="players1">
-			<td>Avg end players</td><td><div class="w3-right-align" id="AvgPlayers"></div></td>
-		</tr>
-		<tr>
-			<td>Least / Most players</td><td><div class="w3-right-align" id="ExtremePlayers"></div></td>
-		</tr>
-		<tr style="border-bottom: 1px solid black;">
-			<td>5th / 95th percentile:</td><td><div class="w3-right-align" id="ReasonablePlayers"></div></td>
-		</tr>
-		<tr>
-			<td style="width: 50%">Avg Games - 2P</td>
-			<td style="width: 50%"><div class="w3-right-align" id="2pGames"></div></td>
-		</tr>
-		<tr>
-			<td>Avg Games - 3P</td><td><div class="w3-right-align" id="3pGames"></div></td>
-		</tr>
-		<tr>
-			<td>Avg Games - 4P</td><td><div class="w3-right-align" id="4pGames"></div></td>
-		</tr>
-		<tr style="border-bottom: 1px solid black;">
-			<td>Avg Games - Total</td><td><div class="w3-right-align" id="TotalGames"></div></td>
-		</tr>
-	</table>
+	<div class="w3-row">
+		<table class="w3-table w3-striped w3-quarter" style="margin-top: 16px;">
+			<tr class="w3-row" style="border-top: 1px solid black;">
+				<td>Meaningful Games</td><td><div class="w3-right-align" id="MeaningfulGames"></div></td>
+			</tr>
+			<tr style="border-bottom: 1px solid black;">
+				<td>Approximate TGP</td><td><div class="w3-right-align" id="ApproxTGP"></div></td>
+			</tr>
+			<tr>
+				<td>Average Rounds</td><td><div class="w3-right-align" id="AvgRounds"></div></td>
+			</tr>
+			<tr>
+				<td>Least / Most Rounds</td><td><div class="w3-right-align" id="ExtremeRounds"></div></td>
+			</tr>
+			<tr style="border-bottom: 1px solid black;">
+				<td>5th / 95th percentile</td><td><div class="w3-right-align" id="ReasonableRounds"></div></td>
+			</tr>
+			<tr id="players1">
+				<td>Avg end players</td><td><div class="w3-right-align" id="AvgPlayers"></div></td>
+			</tr>
+			<tr>
+				<td>Least / Most players</td><td><div class="w3-right-align" id="ExtremePlayers"></div></td>
+			</tr>
+			<tr style="border-bottom: 1px solid black;">
+				<td>5th / 95th percentile:</td><td><div class="w3-right-align" id="ReasonablePlayers"></div></td>
+			</tr>
+			<tr>
+				<td style="width: 50%">Avg Games - 2P</td>
+				<td style="width: 50%"><div class="w3-right-align" id="2pGames"></div></td>
+			</tr>
+			<tr>
+				<td>Avg Games - 3P</td><td><div class="w3-right-align" id="3pGames"></div></td>
+			</tr>
+			<tr>
+				<td>Avg Games - 4P</td><td><div class="w3-right-align" id="4pGames"></div></td>
+			</tr>
+			<tr style="border-bottom: 1px solid black;">
+				<td>Avg Games - Total</td><td><div class="w3-right-align" id="TotalGames"></div></td>
+			</tr>
+		</table>
+	</div>
 	
 	<div class="w3-container" style="margin-top: 32px;">
 		<h6 class="w3-opacity">
