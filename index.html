@@ -15,59 +15,68 @@
 	<div class="w3-container w3-row" style="margin-top: 64px;">
 		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="50" />
 		<label for="playerCount">contestants in </label>
-		<input type="number" id="playerCount" name="playerCount" min="2" max="4" value="4" />
+		<input type="number" id="groupCount" name="groupCount" min="2" max="4" value="4" />
 		<label for="playerCount"> player groups.  Eliminations happen at </label>
 		<input type="number" id="strikes" name="strikes" min="1" max="100" value="4" />
 		<label for="strikes">strikes and will continue until there are </label>
-		<input type="number" id="playersLeft" name="playersLeft" min="1" max="1000" value="1" />
+		<input type="number" id="playersLeft" name="playersLeft" min="1" max="1000" value="1" onchange="qualifyQuestion()" />
 		<label for="playersLeft"> players left.</label>
 	</div>
+	
+	<div class="w3-container w3-text-green" style="visibility: hidden; margin-top: 16px;" id="finals">
+		<label for="finals"><b>Two-stage knockout tournament?</b> <input type="checkbox" id="finalsQuestion" value="1" onchange="qualifyQuestion2()">
+	</div>
 		
+	<div class="w3-container w3-text-green" style="visibility: hidden; margin-top: 16px;" id="finals2">
+		<label for="playerCount">Remaining contestants in </label>
+		<input type="number" id="groupCount2" name="groupCount2" min="2" max="4" value="4" />
+		<label for="playerCount"> player groups.  Eliminations happen at </label>
+		<input type="number" id="strikes2" name="strikes2" min="1" max="100" value="4" />
+		<label for="strikes">strikes and will continue until there is 1 player left.</label>
+	</div>
+
 	<div class="w3-container w3-row" style="margin-top: 16px;">
 		<label for="commonFormats">Common Formats:</label>
-		<input list="commonFormatList" id="commonFormats" name="commonFormats" placeholder="Fair strikes" value="Fair strikes" />
-		<datalist id="commonFormatList">
-		   <option>Fair strikes
-		   <option>Progressive strikes
-		   <option>Single/Slow strikes
-		   <option>Lenient group strikes
-		   <option>Strict group strikes
-		   <option>Oprah strikes
-		</datalist>
+		<select id="commonFormats" onchange="fillStrikes()">
+		   <option value="1" selected>Fair strikes
+		   <option value="2">Progressive strikes
+		   <option value="3">Single/Slow strikes
+		   <option value="4">Lenient group strikes
+		   <option value="5">Strict group strikes
+		   <option value="6">Oprah strikes
+		</select>
 	</div>
 	
-	<div class="w3-row w3-container">
-		<table class="w3-table w3-third">
-			<tr>
-				<th>2P Groups</th>
-				<th>3P Groups</th>
-				<th>4P Groups</th>
-			</tr>
-			<tr>
-				<td>		
-					<input type="number" id="p21" name="p21" min="0" max="100" value="0" />
-					<input type="number" id="p22" name="p22" min="1" max="100" value="2" />
-				</td>
-				<td>		
-					<input type="number" id="p31" name="p31" min="0" max="100" value="0" />
-					<input type="number" id="p32" name="p32" min="0" max="100" value="1" />
-					<input type="number" id="p33" name="p33" min="1" max="100" value="2" />
-				</td>
-				<td>		
-					<input type="number" id="p41" name="p41" min="0" max="100" value="0" />
-					<input type="number" id="p42" name="p42" min="0" max="100" value="1" />
-					<input type="number" id="p43" name="p43" min="0" max="100" value="1" />
-					<input type="number" id="p44" name="p44" min="1" max="100" value="2" />
-				</td>
-			</tr>
-		</table>
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<div class="w3-col s12 m12 l1"><b>2P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p21" name="p21" min="0" max="100" value="0" />
+			<input type="number" id="p22" name="p22" min="1" max="100" value="2" />
+		</div>
+	</div>
+	<div class="w3-row w3-container" style="margin-top: 8px;">
+		<div class="w3-col s12 m12 l1"><b>3P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p31" name="p31" min="0" max="100" value="0" />
+			<input type="number" id="p32" name="p32" min="0" max="100" value="1" />
+			<input type="number" id="p33" name="p33" min="1" max="100" value="2" />
+		</div>
+	</div>
+	<div class="w3-row w3-container" style="margin-top: 8px;">
+		<div class="w3-col s12 m12 l1"><b>4P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p41" name="p41" min="0" max="100" value="0" />
+			<input type="number" id="p42" name="p42" min="0" max="100" value="1" />
+			<input type="number" id="p43" name="p43" min="0" max="100" value="1" />
+			<input type="number" id="p44" name="p44" min="1" max="100" value="2" />
+		</div>
 	</div>
 	
-	<div class="w3-row w3-container">
+	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Knockout Tournament</button>
 	</div>
 
-	<div class="w3-row w3-container">
+	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<div class="w3-col s4 m4 l2"><b>Results</b></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" style="visibility: hidden;" id="qualifying"><b>Qualifying</b></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" style="visibility: hidden;" id="finals"><b>Finals</b></div>
@@ -82,10 +91,10 @@
 		<div class="w3-col s4 m4 l1 w3-right-align" id="ApproxTGP"></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="ApproxTGP2"></div>
 	</div>
-	<div class="w3-row w3-container" style="visibility: hidden;">
+	<div class="w3-row w3-container" style="visibility: hidden;" id="tgp">
 		<div class="w3-col s4 m4 l2">Total TGP</div>
-		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP"></div>
-		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP2"></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP2">&nbsp;</div>
 	</div>
 	<div class="w3-row w3-container">
 		<div class="w3-col s4 m4 l2 w3-border-top">Average Rounds</div>
@@ -98,7 +107,7 @@
 		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremeRounds2"> </div>
 	</div>
 	<div class="w3-row w3-container">
-		<div class="w3-col s4 m4 l2 w3-border-bottom">5th / 95th percentile</div>
+		<div class="w3-col s4 m4 l2 w3-border-bottom">5th-95th %tile</div>
 		<div class="w3-col s4 m4 l1 w3-right-align w3-border-bottom" id="ReasonableRounds">&nbsp;</div>
 		<div class="w3-col s4 m4 l1 w3-right-align w3-border-bottom" id="ReasonableRounds2">&nbsp;</div>
 	</div>
@@ -113,31 +122,37 @@
 		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremePlayers2"></div>
 	</div>
 	<div class="w3-row w3-container">
-		<div class="w3-col s4 m4 l2 w3-border-bottom">5th / 95th percentile</div>
+		<div class="w3-col s4 m4 l2 w3-border-bottom">5th-95th %tile</div>
 		<div class="w3-col s4 m4 l1 w3-border-bottom w3-right-align" id="ReasonablePlayers">&nbsp;</div>
 		<div class="w3-col s4 m4 l1 w3-border-bottom w3-right-align" id="ReasonablePlayers2">&nbsp;</div>
 	</div>
 	<div class="w3-row w3-container">
-		<div class="w3-col s4 m4 l2">Avg Games - 2P</div>
+		<div class="w3-col s4 m4 l2">Avg Games-2P</div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="2pGames"></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="2pGames2"></div>
 	</div>
 	<div class="w3-row w3-container">
-		<div class="w3-col s4 m4 l2">Avg Games - 3P</div>
+		<div class="w3-col s4 m4 l2">Avg Games-3P</div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="3pGames"></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="3pGames2"></div>
 	</div>
 	<div class="w3-row w3-container">
-		<div class="w3-col s4 m4 l2">Avg Games - 4P</div>
+		<div class="w3-col s4 m4 l2">Avg Games-4P</div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="4pGames"></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="4pGames2"></div>
 	</div>
 	<div class="w3-row w3-container">
-		<div class="w3-col s4 m4 l2">Avg Games - Total</div>
+		<div class="w3-col s4 m4 l2">Avg Games-All</div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalGames"></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalGames2"></div>
 	</div>
 	
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			DISCLAIMER:  This calculator, as with all previously written calculators, assumes that all players are of equal ability.  Your tournament will likely last about 10% longer if your players are significantly NOT of equal ability.
+		</h6>
+	</div>
+
 	<div class="w3-container" style="margin-top: 32px;">
 		<h6 class="w3-opacity">
 			This calculator is written by Patrick F. aka gameboyf9, uses 10,000 simulations AND IS IN BETA.  All are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there any problems or inaccuracies are found.
@@ -147,167 +162,5 @@
 		</h6>
 	</div>
 </body>
+<script src="js/strikes.js"></script>
 </html>
-
-<script>
-	class Player {
-		constructor(id, topScore) {
-			this.id = id;
-			this.topScore = topScore;
-			this.strikes = 0;
-			this.score = 0;
-		}
-	}
-	
-	function calcKnockoutTournament(players, finalStrikes, finalPlayers, p21, p22, p31, p32, p33, p41, p42, p43, p44) {	
-		let strikeDist = [ 
-			[ p21, p22, p22, p22], 
-			[ p31, p32, p33, p33], 
-			[ p41, p42, p43, p44]
-		];
-
-		let topScore = 10000000.0;
-		let lowScore = 10000000.0;
-
-		let playerList = [];
-		let roundResult = [];
-		let finalEndPlayers = [];
-		let playerGames = [ 0, 0, 0 ];
-		let firstIteration = "";
-		let survivingPlayers = players;
-		let iterations = 10000;
-
-		for (let h = 0; h < iterations; h++)
-		{
-			let round = 0;
-			let strightGames = 0.0;
-			survivingPlayers = players;
-
-			playerList = [];
-			for (let i = 0; i < players; i++)
-			{
-				let p = new Player(i, (lowScore + ((topScore - lowScore) * (i / (players - 1)))));
-				playerList.push(p);
-			}
-			while (survivingPlayers > finalPlayers)
-			{
-				let singlePlayerMatches = [ 0, 0, 0 ];
-
-				round++;
-
-				allowed = [...playerList];
-
-				while (allowed.length > 0)
-				{
-					let match = []
-					let matchPlayers = 4;
-					if (allowed.length === 9 || allowed.length === 6 || allowed.length === 5 || allowed.length === 3)
-						matchPlayers = 3;
-					else if (allowed.length ===  2)
-						matchPlayers = 2;
-
-					singlePlayerMatches[matchPlayers - 2]++;
-
-					for (let j = 0; j < matchPlayers; j++)
-					{
-						let chosenPlayer = getRandomInt(allowed.length);
-						match.push(allowed[chosenPlayer]);
-						match[j].score = getRandomInt(match[j].topScore);
-						allowed.splice(chosenPlayer, 1);
-					}
-
-					for (let j = 0; j < matchPlayers; j++)
-					{
-						let rank = 0; // Weird for someone to rank in 0th place, but since arrays are zero-based...
-						for (let k = 0; k < matchPlayers; k++)
-						{
-							if (k == j) continue;
-							if (match[j].score < match[k].score) rank++;
-						}
-						// The old calculator does it this way...
-						//rank = (int)((double)match[j].score / match[j].topScore * matchPlayers) + 1;
-
-						// This will carry over to playerList - match[j] is by reference.
-						match[j].strikes += strikeDist[matchPlayers - 2][rank];
-					}
-					
-				}
-				for (let j = 0; j < playerList.length; j++) 
-				{
-					if (playerList[j].strikes >= finalStrikes) 
-					{
-						playerList.splice(j, 1);
-						survivingPlayers--;
-						j--;
-					}				
-				}
-				if (h == 0)
-					firstIteration += "R" + round + " -  Players:  " + survivingPlayers + " - 4P:  " + singlePlayerMatches[2] + " - 3P:  " + singlePlayerMatches[1] + " - 2P:  " + singlePlayerMatches[0] + "\r\n";
-
-				playerGames[0] += singlePlayerMatches[0];
-				playerGames[1] += singlePlayerMatches[1];
-				playerGames[2] += singlePlayerMatches[2];
-				strightGames++;
-			}
-			finalEndPlayers.push(survivingPlayers);
-			if (h == 0)
-				firstIteration += "End players:  " + survivingPlayers;
-
-			roundResult.push(round);
-		}
-
-		//firstIterationDetail.Text = firstIteration;
-
-		let roundAvg = average(roundResult);
-		let endPlayersAvg = average(finalEndPlayers);
-		let totalGames = playerGames[0] + playerGames[1] + playerGames[2];
-		let totalTGP = playerGames[0] + (1.5 * playerGames[1]) + (2 * playerGames[2]);
-		let pct5 = parseInt(iterations * 0.05);
-		let pct95 = parseInt(iterations * 0.95);
-		roundResult.sort();
-		finalEndPlayers.sort();
-
-		document.getElementById("2pGames").innerHTML = (playerGames[0] / iterations).toFixed(2);
-		document.getElementById("3pGames").innerHTML = (playerGames[1] / iterations).toFixed(2);
-		document.getElementById("4pGames").innerHTML = (playerGames[2] / iterations).toFixed(2);
-		document.getElementById("TotalGames").innerHTML = (totalGames / iterations).toFixed(2);
-		document.getElementById("MeaningfulGames").innerHTML = (roundAvg * totalTGP / totalGames).toFixed(2);
-		document.getElementById("ApproxTGP").innerHTML = (roundAvg * totalTGP / totalGames * 4 > 100 ? "100.00% (maxed - " + (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%)" : (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%");
-		document.getElementById("AvgRounds").innerHTML = roundAvg.toFixed(2);
-		document.getElementById("ExtremeRounds").innerHTML = Math.min(...roundResult) + " / " + Math.max(...roundResult);
-		document.getElementById("ReasonableRounds").innerHTML = roundResult[pct5] + " / " + roundResult[pct95];
-		document.getElementById("AvgPlayers").innerHTML = endPlayersAvg.toFixed(2);
-		document.getElementById("ExtremePlayers").innerHTML = Math.min(...finalEndPlayers) + " / " + Math.max(...finalEndPlayers);
-		document.getElementById("ReasonablePlayers").innerHTML = finalEndPlayers[pct5] + " / " + finalEndPlayers[pct95];
-	}
-
-	function tgpButton() {
-		calcKnockoutTournament(parseInt(document.getElementById("playerCount").value),
-			parseInt(document.getElementById("strikes").value),
-			parseInt(document.getElementById("playersLeft").value),
-			parseInt(document.getElementById("p21").value),
-			parseInt(document.getElementById("p22").value),
-			parseInt(document.getElementById("p31").value),
-			parseInt(document.getElementById("p32").value),
-			parseInt(document.getElementById("p33").value),
-			parseInt(document.getElementById("p41").value),
-			parseInt(document.getElementById("p42").value),
-			parseInt(document.getElementById("p43").value),
-			parseInt(document.getElementById("p44").value)
-			)
-	}
-	
-	function getRandomInt(max) {
-	  return Math.floor(Math.random() * max);
-	}
-
-	function average(numbers) 
-	{
-		let sum = 0;
-		for (let i = 0; i < numbers.length; i++) 
-		{
-			sum += numbers[i];
-		}
-		return sum / numbers.length;
-	}
-</script>
