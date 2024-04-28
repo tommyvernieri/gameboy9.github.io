@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="css/w3.css">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TGP Knockout Calculator</title>
+</head>
+
+<body>
+	<div class="w3-row w3-top w3-bar w3-black">
+		<a href="strikes.html" class="w3-bar-item w3-button">Knockout</a>
+		<a href="matchplay.html" class="w3-bar-item w3-button">Matchplay</a>
+	</div>
+
+	<div class="w3-container w3-row" style="margin-top: 64px;">
+		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="100" />
+		<label for="playerCount">contestants in </label>
+		<input type="number" id="groupCount" name="groupCount" min="2" max="4" value="4" />
+		<label for="playerCount"> player groups.  Qualifying ends after </label>
+		<input type="number" id="rounds" name="rounds" min="1" max="100" value="4" />
+		<label for="rounds">rounds.</label>
+	</div>
+	
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>A-Div Bye</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="ABye" name="playersLeft" min="1" max="1000" value="8" /></div>
+		<div class="w3-col s4 m4 l1"><label for="AByeNA"><b>N/A</b><input type="checkbox" id="AByeNA" value="1"></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>A-Div Qual</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="AQual" name="AQual" min="1" max="1000" value="24" /></div>
+		<div class="w3-col s4 m4 l1"><label for="AQualNA"><b>N/A</b><input type="checkbox" id="AQualNA" value="1"></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>B-Div Qual</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="BQual" name="BQual" min="1" max="1000" value="32" /></div>
+		<div class="w3-col s4 m4 l1"><label for="BQualNA"><b>N/A</b><input type="checkbox" id="BQualNA" value="1"></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>C-Div Qual</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="CQual" name="CQual" min="1" max="1000" value="40" /></div>
+		<div class="w3-col s4 m4 l1"><label for="CQualNA"><b>N/A</b><input type="checkbox" id="CQualNA" value="1"></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>D-Div Qual</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="DQual" name="DQual" min="1" max="1000" value="48" /></div>
+		<div class="w3-col s4 m4 l1"><label for="DQualNA"><b>N/A</b><input type="checkbox" id="DQualNA" value="1"></div>
+	</div>
+		
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<div class="w3-col s12 m12 l1"><b>2P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p21" name="p21" min="0" max="100" value="7" />
+			<input type="number" id="p22" name="p22" min="1" max="100" value="1" />
+		</div>
+	</div>
+	<div class="w3-row w3-container" style="margin-top: 8px;">
+		<div class="w3-col s12 m12 l1"><b>3P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p31" name="p31" min="0" max="100" value="7" />
+			<input type="number" id="p32" name="p32" min="0" max="100" value="4" />
+			<input type="number" id="p33" name="p33" min="1" max="100" value="1" />
+		</div>
+	</div>
+	<div class="w3-row w3-container" style="margin-top: 8px;">
+		<div class="w3-col s12 m12 l1"><b>4P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p41" name="p41" min="0" max="100" value="7" />
+			<input type="number" id="p42" name="p42" min="0" max="100" value="5" />
+			<input type="number" id="p43" name="p43" min="0" max="100" value="3" />
+			<input type="number" id="p44" name="p44" min="1" max="100" value="1" />
+		</div>
+	</div>
+	
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Matchplay Qualifying</button>
+	</div>
+
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<div class="w3-col s4 m4 l2"><b>Results</b></div>
+		<div class="w3-col s4 m4 l1 w3-right-align"><b>Avg</b></div>
+		<div class="w3-col s4 m4 l1 w3-right-align"><b>5-95 %Tile</b></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-top">Points Possible</div>
+		<div class="w3-col s4 m4 l1 w3-border-top w3-right-align" id="MaxPoints">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-border-top w3-right-align">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">A-Div Top</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ATopAvg">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ATop95">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">A-Div Bye</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="AByeAvg">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ABye95">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">A-Div Qual</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="AQualAvg">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="AQual95">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">B-Div Qual</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="BQualAvg">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="BQual95">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">C-Div Qual</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="CQualAvg">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="CQual95">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">D-Div Qual</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="DQualAvg">&nbsp;</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="DQual95">&nbsp;</div>
+	</div>
+	
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			DISCLAIMER:  This calculator assumes that the highest rated player will defeat the lowest rated player 7 times out of 8.
+		</h6>
+	</div>
+
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			This calculator is written by Patrick F. aka gameboyf9, uses 10,000 simulations AND IS IN BETA.  All are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there any problems or inaccuracies are found.
+		</h6>
+	</div>
+</body>
+<script src="js/matchplay.js"></script>
+</html>
