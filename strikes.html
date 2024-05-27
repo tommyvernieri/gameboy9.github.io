@@ -8,10 +8,7 @@
 </head>
 
 <body>
-	<div class="w3-row w3-top w3-bar w3-black">
-		<a href="strikes.html" class="w3-bar-item w3-button">Knockout</a>
-		<a href="matchplay.html" class="w3-bar-item w3-button">Matchplay</a>
-	</div>
+	<div w3-include-html="menu.html"></div>
 
 	<div class="w3-container w3-row" style="margin-top: 64px;">
 		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="50" />
@@ -21,7 +18,7 @@
 		<input type="number" id="strikes" name="strikes" min="1" max="100" value="4" />
 		<label for="strikes">strikes and will continue until there are </label>
 		<input type="number" id="playersLeft" name="playersLeft" min="1" max="1000" value="1" onchange="qualifyQuestion()" />
-		<label for="playersLeft"> players left.</label>
+		<label for="playersLeft"> player(s) left.</label>
 	</div>
 	
 	<div class="w3-container w3-text-green" style="visibility: hidden; margin-top: 16px;" id="finals">
@@ -164,4 +161,6 @@
 	</div>
 </body>
 <script src="js/strikes.js"></script>
+<script src="js/menu.js"></script>
+<script>includeHTML();</script>
 </html>
