@@ -140,13 +140,13 @@ function calcKnockoutTournament(players, groupCount, finalStrikes, finalPlayers,
 
 			allowed = [...playerList];
 
-			while (allowed.length > 0)
+			while (allowed.length > 1)
 			{
 				let match = []
 				let matchPlayers = 4;
-				if (allowed.length === 9 || allowed.length === 6 || allowed.length === 5 || allowed.length === 3)
+				if (groupCount >= 3 && (allowed.length === 9 || allowed.length === 6 || allowed.length === 5 || allowed.length === 3))
 					matchPlayers = 3;
-				else if (allowed.length ===  2)
+				else if (groupCount === 2 || allowed.length === 2)
 					matchPlayers = 2;
 
 				singlePlayerMatches[matchPlayers - 2]++;
@@ -278,6 +278,23 @@ function tgpButton() {
 			parseInt(document.getElementById("p43").value),
 			parseInt(document.getElementById("p44").value),
 			2)
+	} 
+	else 
+	{
+		document.getElementById("2pGames2").innerHTML = "&nbsp;";
+		document.getElementById("3pGames2").innerHTML = "&nbsp;";
+		document.getElementById("4pGames2").innerHTML = "&nbsp;";
+		document.getElementById("TotalGames2").innerHTML = "&nbsp;";
+		document.getElementById("MeaningfulGames2").innerHTML = "&nbsp;";
+		document.getElementById("ApproxTGP2").innerHTML = "&nbsp;";
+		document.getElementById("TotalTGP2").innerHTML = "&nbsp;";
+		document.getElementById("tgp").style.visibility='hidden';
+		document.getElementById("AvgRounds2").innerHTML = "&nbsp;";
+		document.getElementById("ExtremeRounds2").innerHTML = "&nbsp;";
+		document.getElementById("ReasonableRounds2").innerHTML = "&nbsp;";
+		document.getElementById("AvgPlayers2").innerHTML = "&nbsp;";
+		document.getElementById("ExtremePlayers2").innerHTML = "&nbsp;";
+		document.getElementById("ReasonablePlayers2").innerHTML = "&nbsp;";
 	}
 	
 }
