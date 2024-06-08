@@ -113,12 +113,12 @@ function calcKnockoutTournament(players, groupCount, rounds, p21, p22, p31, p32,
 	let pct5 = parseInt(iterations * 0.05);
 	let pct95 = parseInt(iterations * 0.95);
 
-	ATopDist.sort();
-	AByeDist.sort();
-	AQualDist.sort();
-	BQualDist.sort();
-	CQualDist.sort();
-	DQualDist.sort();
+	ATopDist.sort(function(a, b) { return a - b; });
+	AByeDist.sort(function(a, b) { return a - b; });
+	AQualDist.sort(function(a, b) { return a - b; });
+	BQualDist.sort(function(a, b) { return a - b; });
+	CQualDist.sort(function(a, b) { return a - b; });
+	DQualDist.sort(function(a, b) { return a - b; });
 	
 	document.getElementById("MaxPoints").innerHTML = rounds * Math.max(p21, p22, p31, p32, p33, p41, p42, p43, p44);
 	document.getElementById("ATopAvg").innerHTML = average(ATopDist);
@@ -133,34 +133,6 @@ function calcKnockoutTournament(players, groupCount, rounds, p21, p22, p31, p32,
 	document.getElementById("BQual95").innerHTML = BQualDist[pct5] + " / " + BQualDist[pct95];
 	document.getElementById("CQual95").innerHTML = CQualDist[pct5] + " / " + CQualDist[pct95];
 	document.getElementById("DQual95").innerHTML = DQualDist[pct5] + " / " + DQualDist[pct95];
-	
-
-	// let roundAvg = average(roundResult);
-	// let endPlayersAvg = average(finalEndPlayers);
-	// let totalGames = playerGames[0] + playerGames[1] + playerGames[2];
-	// let totalTGP = playerGames[0] + (1.5 * playerGames[1]) + (2 * playerGames[2]);
-	// let pct5 = parseInt(iterations * 0.05);
-	// let pct95 = parseInt(iterations * 0.95);
-	// roundResult.sort();
-	// finalEndPlayers.sort();
-
-	// document.getElementById("2pGames").innerHTML = (playerGames[0] / iterations).toFixed(2);
-	// document.getElementById("3pGames").innerHTML = (playerGames[1] / iterations).toFixed(2);
-	// document.getElementById("4pGames").innerHTML = (playerGames[2] / iterations).toFixed(2);
-	// document.getElementById("TotalGames").innerHTML = (totalGames / iterations).toFixed(2);
-	// document.getElementById("MeaningfulGames").innerHTML = (roundAvg * totalTGP / totalGames).toFixed(2);
-	// if (document.getElementById("finalsQuestion").checked) {
-		// document.getElementById("ApproxTGP").innerHTML = (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%";
-	// } else {
-		// document.getElementById("ApproxTGP").innerHTML = (roundAvg * totalTGP / totalGames * 4 > 100 ? "100.00% (maxed - " + (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%)" : (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%");
-	// }
-	// document.getElementById("tgp").style.visibility='hidden';
-	// document.getElementById("AvgRounds").innerHTML = roundAvg.toFixed(2);
-	// document.getElementById("ExtremeRounds").innerHTML = Math.min(...roundResult) + " / " + Math.max(...roundResult);
-	// document.getElementById("ReasonableRounds").innerHTML = roundResult[pct5] + " / " + roundResult[pct95];
-	// document.getElementById("AvgPlayers").innerHTML = endPlayersAvg.toFixed(2);
-	// document.getElementById("ExtremePlayers").innerHTML = Math.min(...finalEndPlayers) + " / " + Math.max(...finalEndPlayers);
-	// document.getElementById("ReasonablePlayers").innerHTML = finalEndPlayers[pct5] + " / " + finalEndPlayers[pct95];
 }
 
 function tgpButton() {

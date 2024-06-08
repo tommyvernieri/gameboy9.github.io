@@ -148,8 +148,8 @@ function calcKnockoutTournament(players, groupCount, finalStrikes, finalPlayers,
 	let totalTGP = playerGames[0] + (1.5 * playerGames[1]) + (2 * playerGames[2]);
 	let pct5 = parseInt(iterations * 0.05);
 	let pct95 = parseInt(iterations * 0.95);
-	roundResult.sort();
-	finalEndPlayers.sort();
+	roundResult.sort(function(a, b) { return a - b; });
+	finalEndPlayers.sort(function(a, b) { return a - b; });
 
 	if (type === 1) {
 		document.getElementById("2pGames").innerHTML = (playerGames[0] / iterations).toFixed(2);
