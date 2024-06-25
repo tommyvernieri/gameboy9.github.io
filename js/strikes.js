@@ -1,3 +1,26 @@
+window.onload = function() {
+	const params = new Proxy(new URLSearchParams(window.location.search), {
+	  get: (searchParams, prop) => searchParams.get(prop),
+	});
+
+	console.log(params.strikeCount);
+	document.getElementById("strikes").value = params.strikeCount === null ? 4 : params.strikeCount;
+	document.getElementById("playerCount").value = params.players === null ? 50 : params.players;
+	document.getElementById("playersLeft").value = params.left === null ? 1 : params.left;
+	document.getElementById("groupCount").value = params.groups === null ? 4 : params.groups;
+	let strikeFormat = params.strikes;
+	if (strikeFormat === "F") document.getElementById("commonFormats").value = 1;
+	else if (strikeFormat === "P") document.getElementById("commonFormats").value = 2;
+	else if (strikeFormat === "1") document.getElementById("commonFormats").value = 3;
+	else if (strikeFormat === "L") document.getElementById("commonFormats").value = 4;
+	else if (strikeFormat === "S") document.getElementById("commonFormats").value = 5;
+	else if (strikeFormat === "O") document.getElementById("commonFormats").value = 6;
+	else document.getElementById("commonFormats").value = 1;
+	fillStrikes();
+	if (params.strikeCount !== null && params.players !== null && params.left !== null && params.groups !== null && params.strikes !== null)
+		tgpButton();
+}
+
 class Player {
 	constructor(id, topScore, strikes) {
 		this.id = id;
@@ -160,7 +183,7 @@ function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31
 	} else {
 		document.getElementById("ApproxTGP").innerHTML = (roundAvg * totalTGP / totalGames * 4 > 100 ? "100.00% (maxed - " + (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%)" : (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%");
 	}
-	document.getElementById("tgp").style.visibility='hidden';
+	document.getElementById("tgp").style.visibility = 'hidden';
 	document.getElementById("AvgRounds").innerHTML = roundAvg.toFixed(2);
 	document.getElementById("ExtremeRounds").innerHTML = Math.min(...roundResult1) + " / " + Math.max(...roundResult1);
 	document.getElementById("ReasonableRounds").innerHTML = roundResult1[pct5] + " / " + roundResult1[pct95];
@@ -213,6 +236,8 @@ function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31
 		document.getElementById("ExtremePlayers2").innerHTML = "&nbsp;";
 		document.getElementById("ReasonablePlayers2").innerHTML = "&nbsp;";
 	}
+
+	document.getElementById("copylink").style.visibility = 'visible';
 }
 
 function runTournament(players, groupCount, finalStrikes, finalPlayers, playerGames, roundResult, strikeDist) {
@@ -306,6 +331,23 @@ function tgpButton() {
 		parseInt(document.getElementById("p42").value),
 		parseInt(document.getElementById("p43").value),
 		parseInt(document.getElementById("p44").value))	
+}
+
+function clipboard() {
+	let strikes = "";
+	let players = document.getElementById("playerCount").value;
+	let playersLeft = document.getElementById("playersLeft").value;
+	let groupCount = document.getElementById("groupCount").value;
+	let strikesCommon = document.getElementById("commonFormats").value;
+	let strikeCount = parseInt(document.getElementById("strikes").value);
+	if (strikesCommon == "1") strikes = "F";
+	if (strikesCommon == "2") strikes = "P";
+	if (strikesCommon == "3") strikes = "1";
+	if (strikesCommon == "4") strikes = "L";
+	if (strikesCommon == "5") strikes = "S";
+	if (strikesCommon == "6") strikes = "O";
+	
+	navigator.clipboard.writeText("https://gameboy9.github.io/strikes.html?strikes=" + strikes + "&players=" + players + "&left=" + playersLeft + "&groups=" + groupCount + "&strikeCount=" + strikeCount);
 }
 
 function getRandomInt(max) {
