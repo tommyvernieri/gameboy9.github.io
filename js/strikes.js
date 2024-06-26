@@ -3,22 +3,29 @@ window.onload = function() {
 	  get: (searchParams, prop) => searchParams.get(prop),
 	});
 
-	console.log(params.strikeCount);
-	document.getElementById("strikes").value = params.strikeCount === null ? 4 : params.strikeCount;
-	document.getElementById("playerCount").value = params.players === null ? 50 : params.players;
-	document.getElementById("playersLeft").value = params.left === null ? 1 : params.left;
-	document.getElementById("groupCount").value = params.groups === null ? 4 : params.groups;
-	let strikeFormat = params.strikes;
-	if (strikeFormat === "F") document.getElementById("commonFormats").value = 1;
-	else if (strikeFormat === "P") document.getElementById("commonFormats").value = 2;
-	else if (strikeFormat === "1") document.getElementById("commonFormats").value = 3;
-	else if (strikeFormat === "L") document.getElementById("commonFormats").value = 4;
-	else if (strikeFormat === "S") document.getElementById("commonFormats").value = 5;
-	else if (strikeFormat === "O") document.getElementById("commonFormats").value = 6;
-	else document.getElementById("commonFormats").value = 1;
-	fillStrikes();
-	if (params.strikeCount !== null && params.players !== null && params.left !== null && params.groups !== null && params.strikes !== null)
-		tgpButton();
+	if (params.tourney1 !== null) 
+	{
+		let tourneyParams = params.tourney1.split(",");
+		if (tourneyParams.length >= 5) 
+		{
+			console.log(tourneyParams);
+			document.getElementById("strikes").value = tourneyParams[4];
+			document.getElementById("playerCount").value = tourneyParams[1];
+			document.getElementById("playersLeft").value = tourneyParams[2];
+			document.getElementById("groupCount").value = tourneyParams[3];
+			let strikeFormat = tourneyParams[0];
+			if (strikeFormat === "F") document.getElementById("commonFormats").value = 1;
+			else if (strikeFormat === "P") document.getElementById("commonFormats").value = 2;
+			else if (strikeFormat === "1") document.getElementById("commonFormats").value = 3;
+			else if (strikeFormat === "L") document.getElementById("commonFormats").value = 4;
+			else if (strikeFormat === "S") document.getElementById("commonFormats").value = 5;
+			else if (strikeFormat === "O") document.getElementById("commonFormats").value = 6;
+			else document.getElementById("commonFormats").value = 1;
+
+			fillStrikes();
+			tgpButton();
+		}
+	}
 }
 
 class Player {
@@ -347,7 +354,7 @@ function clipboard() {
 	if (strikesCommon == "5") strikes = "S";
 	if (strikesCommon == "6") strikes = "O";
 	
-	navigator.clipboard.writeText("https://gameboy9.github.io/strikes.html?strikes=" + strikes + "&players=" + players + "&left=" + playersLeft + "&groups=" + groupCount + "&strikeCount=" + strikeCount);
+	navigator.clipboard.writeText("https://gameboy9.github.io/strikes.html?tourney1=" + strikes + "," + players + "," + playersLeft + "," + groupCount + "," + strikeCount);
 }
 
 function getRandomInt(max) {
