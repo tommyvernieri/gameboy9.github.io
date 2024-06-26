@@ -21,8 +21,16 @@ window.onload = function() {
 			else if (strikeFormat === "S") document.getElementById("commonFormats").value = 5;
 			else if (strikeFormat === "O") document.getElementById("commonFormats").value = 6;
 			else document.getElementById("commonFormats").value = 1;
-
 			fillStrikes();
+
+			if (tourneyParams.length >= 14)
+			{
+				var strikeTexts = document.getElementsByName('strikes[]');
+				for (let i = 0; i < 9; i++) {
+					strikeTexts[i].value = tourneyParams[5 + i];
+				}
+			}
+
 			tgpButton();
 		}
 	}
@@ -354,7 +362,13 @@ function clipboard() {
 	if (strikesCommon == "5") strikes = "S";
 	if (strikesCommon == "6") strikes = "O";
 	
-	navigator.clipboard.writeText("https://gameboy9.github.io/strikes.html?tourney1=" + strikes + "," + players + "," + playersLeft + "," + groupCount + "," + strikeCount);
+	var strikeTexts = document.getElementsByName('strikes[]');
+	let strikeDist = "";
+	for (let i = 0; i < 9; i++) {
+		strikeDist = strikeDist + strikeTexts[i].value + (i < 8 ? "," : "");
+	}
+
+	navigator.clipboard.writeText("https://gameboy9.github.io/strikes.html?tourney1=" + strikes + "," + players + "," + playersLeft + "," + groupCount + "," + strikeCount + "," + strikeDist);
 }
 
 function getRandomInt(max) {
