@@ -21,21 +21,8 @@
 		<label for="playersLeft"> player(s) left.</label>
 	</div>
 	
-	<div class="w3-container w3-text-green" style="visibility: hidden; margin-top: 16px;" id="finals">
-		<label for="finals"><b>Two-stage knockout tournament?</b> <input type="checkbox" id="finalsQuestion" value="1" onchange="qualifyQuestion2()"> <br />
-		<label for="finals"><b>Tiebreaker to reach qualifying player count?</b> <input type="checkbox" id="exactPlayers" value="1">
-	</div>
-		
-	<div class="w3-container w3-text-green" style="visibility: hidden; margin-top: 16px;" id="finals2">
-		<label for="playerCount">Remaining contestants in </label>
-		<input type="number" id="groupCount2" name="groupCount2" min="2" max="4" value="4" />
-		<label for="playerCount"> player groups.  Eliminations happen at </label>
-		<input type="number" id="strikes2" name="strikes2" min="1" max="100" value="4" />
-		<label for="strikes">strikes and will continue until there is 1 player left.</label>
-	</div>
-
 	<div class="w3-container w3-row" style="margin-top: 16px;">
-		<label for="commonFormats">Common Formats:</label>
+		<div class="w3-col s6 m6 l1"><b>Common Formats:</b></div>
 		<select id="commonFormats" onchange="fillStrikes()">
 		   <option value="1" selected>Fair strikes
 		   <option value="2">Progressive strikes
@@ -71,14 +58,65 @@
 		</div>
 	</div>
 	
+	<div class="w3-container w3-lime" style="display:none; margin-top: 16px;" id="finals">
+		<label for="finals"><b>Two-stage knockout tournament?</b> <input type="checkbox" id="finalsQuestion" value="1" onchange="qualifyQuestion2()"> <br />
+		<label for="finals"><b>Tiebreaker to reach qualifying player count?</b> <input type="checkbox" id="exactPlayers" value="1">
+
+		<div class="w3-container" style="display: none; margin-top: 16px;" id="finals2">
+			<label for="playerCount">Remaining contestants in </label>
+			<input type="number" id="groupCount2" name="groupCount2" min="2" max="4" value="4" />
+			<label for="playerCount"> player groups.  Eliminations happen at </label>
+			<input type="number" id="strikes2" name="strikes2" min="1" max="100" value="4" />
+			<label for="strikes">strikes and will continue until there is 1 player left.</label>
+
+			<div class="w3-row" style="margin-top: 16px;">
+				<div class="w3-col s6 m6 l1"><b>Common Formats:</b></div>
+				<select id="commonFormats-f" onchange="fillStrikesF()">
+				   <option value="1" selected>Fair strikes
+				   <option value="2">Progressive strikes
+				   <option value="3">Single/Slow strikes
+				   <option value="4">Lenient group strikes
+				   <option value="5">Strict group strikes
+				   <option value="6">Oprah strikes
+				</select>
+			</div>
+
+			<div class="w3-row" style="margin-top: 16px;">
+				<div class="w3-col s12 m12 l1"><b>2P Groups</b></div>
+				<div class="w3-col s12 m12 l4">
+					<input type="number" id="p21-f" name="strikesF[]" min="0" max="100" value="0" />
+					<input type="number" id="p22-f" name="strikesF[]" min="1" max="100" value="2" />
+				</div>
+			</div>
+			<div class="w3-row" style="margin-top: 8px;">
+				<div class="w3-col s12 m12 l1"><b>3P Groups</b></div>
+				<div class="w3-col s12 m12 l4">
+					<input type="number" id="p31-f" name="strikesF[]" min="0" max="100" value="0" />
+					<input type="number" id="p32-f" name="strikesF[]" min="0" max="100" value="1" />
+					<input type="number" id="p33-f" name="strikesF[]" min="1" max="100" value="2" />
+				</div>
+			</div>
+			<div class="w3-row" style="margin-top: 8px;">
+				<div class="w3-col s12 m12 l1"><b>4P Groups</b></div>
+				<div class="w3-col s12 m12 l4">
+					<input type="number" id="p41-f" name="strikesF[]" min="0" max="100" value="0" />
+					<input type="number" id="p42-f" name="strikesF[]" min="0" max="100" value="1" />
+					<input type="number" id="p43-f" name="strikesF[]" min="0" max="100" value="1" />
+					<input type="number" id="p44-f" name="strikesF[]" min="1" max="100" value="2" />
+				</div>
+			</div>
+		</div>
+	</div>
+		
+
 	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Knockout Tournament</button>
 	</div>
 
 	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<div class="w3-col s4 m4 l2"><b>Results</b></div>
-		<div class="w3-col s4 m4 l1 w3-right-align" style="visibility: hidden;" id="qualifying"><b>Qualifying</b></div>
-		<div class="w3-col s4 m4 l1 w3-right-align" style="visibility: hidden;" id="finals"><b>Finals</b></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" style="display: none;" id="qualifying"><b>Qualifying</b></div>
+		<div class="w3-col s4 m4 l1 w3-right-align" style="display: none;" id="finals"><b>Finals</b></div>
 	</div>
 	<div class="w3-row w3-container">
 		<div class="w3-col s4 m4 l2">Meaningful Games</div>
@@ -90,7 +128,7 @@
 		<div class="w3-col s4 m4 l1 w3-right-align" id="ApproxTGP"></div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="ApproxTGP2"></div>
 	</div>
-	<div class="w3-row w3-container" style="visibility: hidden;" id="tgp">
+	<div class="w3-row w3-container" style="display:none;" id="tgp">
 		<div class="w3-col s4 m4 l2">Total TGP</div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP">&nbsp;</div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalTGP2">&nbsp;</div>
@@ -146,7 +184,7 @@
 		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalGames2"></div>
 	</div>
 
-	<div class="w3-container w3-text-green" style="visibility: hidden; margin-top: 16px;" id="copylink">
+	<div class="w3-container w3-text-green" style="display: none; margin-top: 16px;" id="copylink">
 		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="clipboard()">Share link to tourney params to clipboard</button>
 	</div>
 	

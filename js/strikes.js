@@ -48,105 +48,126 @@ class Player {
 function qualifyQuestion() {
 	let finalPlayers = parseInt(document.getElementById("playersLeft").value);
 	if (finalPlayers > 1)
-		document.getElementById("finals").style.visibility='visible';
+		document.getElementById("finals").style.display='block';
 	else {
-		document.getElementById("finals").style.visibility='hidden';
-		document.getElementById("finals2").style.visibility='hidden';
+		document.getElementById("finals").style.display='none';
+		document.getElementById("finals2").style.display='none';
 		document.getElementById("finalsQuestion").checked = false;
 	}
 		
 }
 
 function qualifyQuestion2() {
-	if (document.getElementById("finalsQuestion").value === "1")
-		document.getElementById("finals2").style.visibility='visible';
-	else
-		document.getElementById("finals2").style.visibility='hidden';
+	if (document.getElementById("finalsQuestion").value === "1") {
+		document.getElementById("commonFormats-f").value = document.getElementById("commonFormats").value;
+		document.getElementById("p21-f").value = document.getElementById("p21").value;
+		document.getElementById("p22-f").value = document.getElementById("p22").value;
+		document.getElementById("p31-f").value = document.getElementById("p31").value;
+		document.getElementById("p32-f").value = document.getElementById("p32").value;
+		document.getElementById("p33-f").value = document.getElementById("p33").value;
+		document.getElementById("p41-f").value = document.getElementById("p41").value;
+		document.getElementById("p42-f").value = document.getElementById("p42").value;
+		document.getElementById("p43-f").value = document.getElementById("p43").value;
+		document.getElementById("p44-f").value = document.getElementById("p44").value;
+		document.getElementById("finals2").style.display='block';
+	} else {
+		document.getElementById("finals2").style.display='none';
+	}
 }
 
 function fillStrikes() {
 	let value = document.getElementById("commonFormats").value;
 	if (value === "1") 
 	{
-		document.getElementById("p21").value = 0;
-		document.getElementById("p22").value = 2;
-		document.getElementById("p31").value = 0;
-		document.getElementById("p32").value = 1;
-		document.getElementById("p33").value = 2;
-		document.getElementById("p41").value = 0;
-		document.getElementById("p42").value = 1;
-		document.getElementById("p43").value = 1;
-		document.getElementById("p44").value = 2;
+		document.getElementById("p21").value = 0; document.getElementById("p22").value = 2;
+		document.getElementById("p31").value = 0; document.getElementById("p32").value = 1; document.getElementById("p33").value = 2;
+		document.getElementById("p41").value = 0; document.getElementById("p42").value = 1; document.getElementById("p43").value = 1; document.getElementById("p44").value = 2;
 	}
 	else if (value === "2")
 	{
-		document.getElementById("p21").value = 0;
-		document.getElementById("p22").value = 1;
-		document.getElementById("p31").value = 0;
-		document.getElementById("p32").value = 1;
-		document.getElementById("p33").value = 2;
-		document.getElementById("p41").value = 0;
-		document.getElementById("p42").value = 1;
-		document.getElementById("p43").value = 2;
-		document.getElementById("p44").value = 3;
+		document.getElementById("p21").value = 0; document.getElementById("p22").value = 1; 
+		document.getElementById("p31").value = 0; document.getElementById("p32").value = 1; document.getElementById("p33").value = 2;
+		document.getElementById("p41").value = 0; document.getElementById("p42").value = 1; document.getElementById("p43").value = 2; document.getElementById("p44").value = 3;
 	}
 	else if (value === "3")
 	{
-		document.getElementById("p21").value = 0;
-		document.getElementById("p22").value = 1;
-		document.getElementById("p31").value = 0;
-		document.getElementById("p32").value = 0;
-		document.getElementById("p33").value = 1;
-		document.getElementById("p41").value = 0;
-		document.getElementById("p42").value = 0;
-		document.getElementById("p43").value = 0;
-		document.getElementById("p44").value = 1;
+		document.getElementById("p21").value = 0; document.getElementById("p22").value = 1;
+		document.getElementById("p31").value = 0; document.getElementById("p32").value = 0; document.getElementById("p33").value = 1;
+		document.getElementById("p41").value = 0; document.getElementById("p42").value = 0; document.getElementById("p43").value = 0; document.getElementById("p44").value = 1;
 	}
 	else if (value === "4")
 	{
-		document.getElementById("p21").value = 0;
-		document.getElementById("p22").value = 1;
-		document.getElementById("p31").value = 0;
-		document.getElementById("p32").value = 0;
-		document.getElementById("p33").value = 1;
-		document.getElementById("p41").value = 0;
-		document.getElementById("p42").value = 0;
-		document.getElementById("p43").value = 1;
-		document.getElementById("p44").value = 1;
+		document.getElementById("p21").value = 0; document.getElementById("p22").value = 1;
+		document.getElementById("p31").value = 0; document.getElementById("p32").value = 0; document.getElementById("p33").value = 1;
+		document.getElementById("p41").value = 0; document.getElementById("p42").value = 0; document.getElementById("p43").value = 1; document.getElementById("p44").value = 1;
 	}
 	else if (value === "5")
 	{
-		document.getElementById("p21").value = 0;
-		document.getElementById("p22").value = 1;
-		document.getElementById("p31").value = 0;
-		document.getElementById("p32").value = 1;
-		document.getElementById("p33").value = 1;
-		document.getElementById("p41").value = 0;
-		document.getElementById("p42").value = 0;
-		document.getElementById("p43").value = 1;
-		document.getElementById("p44").value = 1;
+		document.getElementById("p21").value = 0; document.getElementById("p22").value = 1;
+		document.getElementById("p31").value = 0; document.getElementById("p32").value = 1; document.getElementById("p33").value = 1;
+		document.getElementById("p41").value = 0; document.getElementById("p42").value = 0; document.getElementById("p43").value = 1; document.getElementById("p44").value = 1;
 	}
 	else if (value === "6")
 	{
-		document.getElementById("p21").value = 0;
-		document.getElementById("p22").value = 1;
-		document.getElementById("p31").value = 0;
-		document.getElementById("p32").value = 1;
-		document.getElementById("p33").value = 1;
-		document.getElementById("p41").value = 0;
-		document.getElementById("p42").value = 1;
-		document.getElementById("p43").value = 1;
-		document.getElementById("p44").value = 1;
+		document.getElementById("p21").value = 0; document.getElementById("p22").value = 1;
+		document.getElementById("p31").value = 0; document.getElementById("p32").value = 1; document.getElementById("p33").value = 1;
+		document.getElementById("p41").value = 0; document.getElementById("p42").value = 1; document.getElementById("p43").value = 1; document.getElementById("p44").value = 1;
 	}
 }
 
-function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31, p32, p33, p41, p42, p43, p44) {	
+function fillStrikesF() {
+	let value = document.getElementById("commonFormats-f").value;
+	if (value === "1") 
+	{
+		document.getElementById("p21-f").value = 0; document.getElementById("p22-f").value = 2;
+		document.getElementById("p31-f").value = 0; document.getElementById("p32-f").value = 1; document.getElementById("p33-f").value = 2;
+		document.getElementById("p41-f").value = 0; document.getElementById("p42-f").value = 1; document.getElementById("p43-f").value = 1; document.getElementById("p44-f").value = 2;
+	}
+	else if (value === "2")
+	{
+		document.getElementById("p21-f").value = 0; document.getElementById("p22-f").value = 1; 
+		document.getElementById("p31-f").value = 0; document.getElementById("p32-f").value = 1; document.getElementById("p33-f").value = 2;
+		document.getElementById("p41-f").value = 0; document.getElementById("p42-f").value = 1; document.getElementById("p43-f").value = 2; document.getElementById("p44-f").value = 3;
+	}
+	else if (value === "3")
+	{
+		document.getElementById("p21-f").value = 0; document.getElementById("p22-f").value = 1;
+		document.getElementById("p31-f").value = 0; document.getElementById("p32-f").value = 0; document.getElementById("p33-f").value = 1;
+		document.getElementById("p41-f").value = 0; document.getElementById("p42-f").value = 0; document.getElementById("p43-f").value = 0; document.getElementById("p44-f").value = 1;
+	}
+	else if (value === "4")
+	{
+		document.getElementById("p21-f").value = 0; document.getElementById("p22-f").value = 1;
+		document.getElementById("p31-f").value = 0; document.getElementById("p32-f").value = 0; document.getElementById("p33-f").value = 1;
+		document.getElementById("p41-f").value = 0; document.getElementById("p42-f").value = 0; document.getElementById("p43-f").value = 1; document.getElementById("p44-f").value = 1;
+	}
+	else if (value === "5")
+	{
+		document.getElementById("p21-f").value = 0; document.getElementById("p22-f").value = 1;
+		document.getElementById("p31-f").value = 0; document.getElementById("p32-f").value = 1; document.getElementById("p33-f").value = 1;
+		document.getElementById("p41-f").value = 0; document.getElementById("p42-f").value = 0; document.getElementById("p43-f").value = 1; document.getElementById("p44-f").value = 1;
+	}
+	else if (value === "6")
+	{
+		document.getElementById("p21-f").value = 0; document.getElementById("p22-f").value = 1;
+		document.getElementById("p31-f").value = 0; document.getElementById("p32-f").value = 1; document.getElementById("p33-f").value = 1;
+		document.getElementById("p41-f").value = 0; document.getElementById("p42-f").value = 1; document.getElementById("p43-f").value = 1; document.getElementById("p44-f").value = 1;
+	}
+}
+
+function calcKnockoutTournament(players, groupCount, finalPlayers) {	
 	let finalStrikes1 = parseInt(document.getElementById("strikes").value);
 	let finalStrikes2 = parseInt(document.getElementById("strikes2").value);
 	let strikeDist = [ 
-		[ p21, p22, p22, p22], 
-		[ p31, p32, p33, p33], 
-		[ p41, p42, p43, p44]
+		[ parseInt(document.getElementById("p21").value), parseInt(document.getElementById("p22").value), parseInt(document.getElementById("p22").value), parseInt(document.getElementById("p22").value)], 
+		[ parseInt(document.getElementById("p31").value), parseInt(document.getElementById("p32").value), parseInt(document.getElementById("p33").value), parseInt(document.getElementById("p33").value)], 
+		[ parseInt(document.getElementById("p41").value), parseInt(document.getElementById("p42").value), parseInt(document.getElementById("p43").value), parseInt(document.getElementById("p44").value)]
+	];
+	
+	let strikeDist2 = [ 
+		[ parseInt(document.getElementById("p21-f").value), parseInt(document.getElementById("p22-f").value), parseInt(document.getElementById("p22-f").value), parseInt(document.getElementById("p22-f").value)], 
+		[ parseInt(document.getElementById("p31-f").value), parseInt(document.getElementById("p32-f").value), parseInt(document.getElementById("p33-f").value), parseInt(document.getElementById("p33-f").value)], 
+		[ parseInt(document.getElementById("p41-f").value), parseInt(document.getElementById("p42-f").value), parseInt(document.getElementById("p43-f").value), parseInt(document.getElementById("p44-f").value)]
 	];
 
 	let roundResult1 = [];
@@ -166,10 +187,10 @@ function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31
 		
 		if (document.getElementById("finalsQuestion").checked) {
 			if (document.getElementById("exactPlayers").checked) {
-				let survivingPlayers2 = runTournament(finalPlayers, groupCount, finalStrikes2, 1, playerGames2, roundResult2, strikeDist);
+				let survivingPlayers2 = runTournament(finalPlayers, groupCount, finalStrikes2, 1, playerGames2, roundResult2, strikeDist2);
 				finalEndPlayers2.push(survivingPlayers2);
 			} else {
-				let survivingPlayers2 = runTournament(survivingPlayers, groupCount, finalStrikes2, 1, playerGames2, roundResult2, strikeDist);
+				let survivingPlayers2 = runTournament(survivingPlayers, groupCount, finalStrikes2, 1, playerGames2, roundResult2, strikeDist2);
 				finalEndPlayers2.push(survivingPlayers2);
 			}
 		}
@@ -198,7 +219,7 @@ function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31
 	} else {
 		document.getElementById("ApproxTGP").innerHTML = (roundAvg * totalTGP / totalGames * 4 > 100 ? "100.00% (maxed - " + (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%)" : (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%");
 	}
-	document.getElementById("tgp").style.visibility = 'hidden';
+	document.getElementById("tgp").style.display = 'none';
 	document.getElementById("AvgRounds").innerHTML = roundAvg.toFixed(2);
 	document.getElementById("ExtremeRounds").innerHTML = Math.min(...roundResult1) + " / " + Math.max(...roundResult1);
 	document.getElementById("ReasonableRounds").innerHTML = roundResult1[pct5] + " / " + roundResult1[pct95];
@@ -228,7 +249,7 @@ function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31
 		document.getElementById("ApproxTGP2").innerHTML = (roundAvg * totalTGP / totalGames * 4).toFixed(2) + "%";
 		let finalTGP = parseFloat(document.getElementById("ApproxTGP").innerHTML) + parseFloat(document.getElementById("ApproxTGP2").innerHTML);
 		document.getElementById("TotalTGP2").innerHTML = (finalTGP > 200 ? "200.00% (maxed - " + finalTGP.toFixed(2) + "%)" : (finalTGP.toFixed(2) + "%"));
-		document.getElementById("tgp").style.visibility='visible';
+		document.getElementById("tgp").style.display='block';
 		document.getElementById("AvgRounds2").innerHTML = roundAvg.toFixed(2);
 		document.getElementById("ExtremeRounds2").innerHTML = Math.min(...roundResult2) + " / " + Math.max(...roundResult2);
 		document.getElementById("ReasonableRounds2").innerHTML = roundResult2[pct5] + " / " + roundResult2[pct95];
@@ -243,7 +264,7 @@ function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31
 		document.getElementById("MeaningfulGames2").innerHTML = "&nbsp;";
 		document.getElementById("ApproxTGP2").innerHTML = "&nbsp;";
 		document.getElementById("TotalTGP2").innerHTML = "&nbsp;";
-		document.getElementById("tgp").style.visibility = 'hidden';
+		document.getElementById("tgp").style.display = 'none';
 		document.getElementById("AvgRounds2").innerHTML = "&nbsp;";
 		document.getElementById("ExtremeRounds2").innerHTML = "&nbsp;";
 		document.getElementById("ReasonableRounds2").innerHTML = "&nbsp;";
@@ -252,7 +273,7 @@ function calcKnockoutTournament(players, groupCount, finalPlayers, p21, p22, p31
 		document.getElementById("ReasonablePlayers2").innerHTML = "&nbsp;";
 	}
 
-	document.getElementById("copylink").style.visibility = 'visible';
+	document.getElementById("copylink").style.display = 'block';
 }
 
 function runTournament(players, groupCount, finalStrikes, finalPlayers, playerGames, roundResult, strikeDist) {
@@ -336,16 +357,7 @@ function runTournament(players, groupCount, finalStrikes, finalPlayers, playerGa
 function tgpButton() {
 	calcKnockoutTournament(parseInt(document.getElementById("playerCount").value),
 		parseInt(document.getElementById("groupCount").value),
-		parseInt(document.getElementById("playersLeft").value),
-		parseInt(document.getElementById("p21").value),
-		parseInt(document.getElementById("p22").value),
-		parseInt(document.getElementById("p31").value),
-		parseInt(document.getElementById("p32").value),
-		parseInt(document.getElementById("p33").value),
-		parseInt(document.getElementById("p41").value),
-		parseInt(document.getElementById("p42").value),
-		parseInt(document.getElementById("p43").value),
-		parseInt(document.getElementById("p44").value))	
+		parseInt(document.getElementById("playersLeft").value))	
 }
 
 function clipboard() {
