@@ -45,6 +45,22 @@ class Player {
 	}
 }
 
+function byeQuestion() {
+	if (document.getElementById("byeQuestion").checked) {
+		document.getElementById("bye1").style.display = 'block';
+	} else {
+		document.getElementById("bye1").style.display = 'none';
+	}
+}
+
+function byeQuestion2() {
+	if (document.getElementById("byeQuestion2").checked) {
+		document.getElementById("bye2").style.display = 'block';
+	} else {
+		document.getElementById("bye2").style.display = 'none';
+	}
+}
+
 function qualifyQuestion() {
 	let finalPlayers = parseInt(document.getElementById("playersLeft").value);
 	if (finalPlayers > 1)
@@ -58,7 +74,7 @@ function qualifyQuestion() {
 }
 
 function qualifyQuestion2() {
-	if (document.getElementById("finalsQuestion").value === "1") {
+	if (document.getElementById("finalsQuestion").checked) {
 		document.getElementById("commonFormats-f").value = document.getElementById("commonFormats").value;
 		document.getElementById("p21-f").value = document.getElementById("p21").value;
 		document.getElementById("p22-f").value = document.getElementById("p22").value;
@@ -285,11 +301,36 @@ function runTournament(players, groupCount, finalStrikes, finalPlayers, playerGa
 	let survivingPlayers = players;
 
 	let playerList = [];
+
+	let byeStrikes = 0;
+	let byeStrikes2 = 0;
+	let byePlayers = 0;
+	let byePlayers2 = 0;
+	if (document.getElementById("byeQuestion").checked) {
+		byeStrikes2 = parseInt(document.getElementById("byeStrikes3").value);
+		byePlayers = parseInt(document.getElementById("byePlayers1").value);
+		if (document.getElementById("byeQuestion2").checked) {
+			byeStrikes = parseInt(document.getElementById("byeStrikes2").value);
+			byePlayers2 = parseInt(document.getElementById("byePlayers2").value) + byePlayers;
+		} else {
+			byeStrikes = byeStrikes2;
+			byePlayers2 = byePlayers;
+		}
+	}
+
 	for (let i = 0; i < players; i++)
 	{
-		let p = new Player(i, (lowScore + ((topScore - lowScore) * (i / (players - 1)))), 0);
+		let playerStrikes = 0;
+		if (i >= byePlayers2) {
+			playerStrikes = byeStrikes2;
+		} else if (i >= byePlayers) {
+			playerStrikes = byeStrikes;
+		}
+
+		let p = new Player(i, (lowScore + ((topScore - lowScore) * (i / (players - 1)))), playerStrikes); // last variable - number of strikes
 		playerList.push(p);
 	}
+
 	while (survivingPlayers > finalPlayers)
 	{
 		let singlePlayerMatches = [ 0, 0, 0 ];
