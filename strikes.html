@@ -14,17 +14,17 @@
 		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="50" /> contestants in
 		<input type="number" id="groupCount" name="groupCount" min="2" max="4" value="4" /> player groups.  Eliminations happen at
 		<input type="number" id="strikes" name="strikes" min="1" max="100" value="4" /> strike(s) and will continue until there are
-		<input type="number" id="playersLeft" name="playersLeft" min="1" max="1000" value="1" onchange="qualifyQuestion()" /> player(s) left.
+		<input type="number" id="playersLeft" name="playersLeft" min="1" max="999" value="1" onchange="qualifyQuestion()" /> player(s) left.
 	</div>
 
 	<div class="w3-container w3-sand" style="margin-top: 16px;">
 		<b>Byes?</b> <input type="checkbox" id="byeQuestion" value="1" onchange="byeQuestion()"> <br />
 
 		<div class="w3-container" style="display: none; margin-top: 8px;" id="bye1">
-			<input type="number" id="byePlayers1" name="byePlayers1" min="0" max="1000" value="4" /> players start with 0 strikes. <br />
+			<input type="number" id="byePlayers1" name="byePlayers1" min="0" max="999" value="4" /> players start with 0 strikes. <br />
 			<b>Second level bye?</b> <input type="checkbox" id="byeQuestion2" value="1" onchange="byeQuestion2()"> <br />
 			<div class="w3-container" style="display: none; margin-top: 0px;" id="bye2">
-				<input type="number" id="byePlayers2" name="byePlayers2" min="0" max="1000" value="4" /> further players start with <input type="number" id="byeStrikes2" name="byeStrikes2" min="1" max="100" value="1" /> strike(s).
+				<input type="number" id="byePlayers2" name="byePlayers2" min="0" max="999" value="4" /> further players start with <input type="number" id="byeStrikes2" name="byeStrikes2" min="1" max="99" value="1" /> strike(s).
 			</div>
 			All other players start with <input type="number" id="byeStrikes3" name="byeStrikes3" min="1" max="100" value="2" /> strike(s). <br />
 		</div>
@@ -45,25 +45,25 @@
 	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<div class="w3-col s12 m12 l1"><b>2P Groups</b></div>
 		<div class="w3-col s12 m12 l4">
-			<input type="number" id="p21" name="strikes[]" min="0" max="100" value="0" />
-			<input type="number" id="p22" name="strikes[]" min="1" max="100" value="2" />
+			<input type="number" id="p21" name="strikes[]" min="0" max="9" value="0" />
+			<input type="number" id="p22" name="strikes[]" min="1" max="9" value="2" />
 		</div>
 	</div>
 	<div class="w3-row w3-container" style="margin-top: 8px;">
 		<div class="w3-col s12 m12 l1"><b>3P Groups</b></div>
 		<div class="w3-col s12 m12 l4">
-			<input type="number" id="p31" name="strikes[]" min="0" max="100" value="0" />
-			<input type="number" id="p32" name="strikes[]" min="0" max="100" value="1" />
-			<input type="number" id="p33" name="strikes[]" min="1" max="100" value="2" />
+			<input type="number" id="p31" name="strikes[]" min="0" max="9" value="0" />
+			<input type="number" id="p32" name="strikes[]" min="0" max="9" value="1" />
+			<input type="number" id="p33" name="strikes[]" min="1" max="9" value="2" />
 		</div>
 	</div>
 	<div class="w3-row w3-container" style="margin-top: 8px;">
 		<div class="w3-col s12 m12 l1"><b>4P Groups</b></div>
 		<div class="w3-col s12 m12 l4">
-			<input type="number" id="p41" name="strikes[]" min="0" max="100" value="0" />
-			<input type="number" id="p42" name="strikes[]" min="0" max="100" value="1" />
-			<input type="number" id="p43" name="strikes[]" min="0" max="100" value="1" />
-			<input type="number" id="p44" name="strikes[]" min="1" max="100" value="2" />
+			<input type="number" id="p41" name="strikes[]" min="0" max="9" value="0" />
+			<input type="number" id="p42" name="strikes[]" min="0" max="9" value="1" />
+			<input type="number" id="p43" name="strikes[]" min="0" max="9" value="1" />
+			<input type="number" id="p44" name="strikes[]" min="1" max="9" value="2" />
 		</div>
 	</div>
 
@@ -95,25 +95,25 @@
 					<div class="w3-row" style="margin-top: 16px;">
 						<div class="w3-col s12 m12 l1"><b>2P Groups</b></div>
 						<div class="w3-col s12 m12 l4">
-							<input type="number" id="p21-f" name="strikesF[]" min="0" max="100" value="0" />
-							<input type="number" id="p22-f" name="strikesF[]" min="1" max="100" value="2" />
+							<input type="number" id="p21-f" name="strikesF[]" min="0" max="9" value="0" />
+							<input type="number" id="p22-f" name="strikesF[]" min="1" max="9" value="2" />
 						</div>
 					</div>
 					<div class="w3-row" style="margin-top: 8px;">
 						<div class="w3-col s12 m12 l1"><b>3P Groups</b></div>
 						<div class="w3-col s12 m12 l4">
-							<input type="number" id="p31-f" name="strikesF[]" min="0" max="100" value="0" />
-							<input type="number" id="p32-f" name="strikesF[]" min="0" max="100" value="1" />
-							<input type="number" id="p33-f" name="strikesF[]" min="1" max="100" value="2" />
+							<input type="number" id="p31-f" name="strikesF[]" min="0" max="9" value="0" />
+							<input type="number" id="p32-f" name="strikesF[]" min="0" max="9" value="1" />
+							<input type="number" id="p33-f" name="strikesF[]" min="1" max="9" value="2" />
 						</div>
 					</div>
 					<div class="w3-row" style="margin-top: 8px;">
 						<div class="w3-col s12 m12 l1"><b>4P Groups</b></div>
 						<div class="w3-col s12 m12 l4">
-							<input type="number" id="p41-f" name="strikesF[]" min="0" max="100" value="0" />
-							<input type="number" id="p42-f" name="strikesF[]" min="0" max="100" value="1" />
-							<input type="number" id="p43-f" name="strikesF[]" min="0" max="100" value="1" />
-							<input type="number" id="p44-f" name="strikesF[]" min="1" max="100" value="2" />
+							<input type="number" id="p41-f" name="strikesF[]" min="0" max="9" value="0" />
+							<input type="number" id="p42-f" name="strikesF[]" min="0" max="9" value="1" />
+							<input type="number" id="p43-f" name="strikesF[]" min="0" max="9" value="1" />
+							<input type="number" id="p44-f" name="strikesF[]" min="1" max="9" value="2" />
 						</div>
 					</div>
 				</div>

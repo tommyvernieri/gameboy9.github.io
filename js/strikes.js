@@ -8,10 +8,10 @@ window.onload = function() {
 		let tourneyParams = params.tourney1.split(",");
 		if (tourneyParams.length >= 5) 
 		{
-			console.log(tourneyParams);
 			document.getElementById("strikes").value = tourneyParams[4];
 			document.getElementById("playerCount").value = tourneyParams[1];
 			document.getElementById("playersLeft").value = tourneyParams[2];
+			qualifyQuestion();
 			document.getElementById("groupCount").value = tourneyParams[3];
 			let strikeFormat = tourneyParams[0];
 			if (strikeFormat === "F") document.getElementById("commonFormats").value = 1;
@@ -30,9 +30,53 @@ window.onload = function() {
 					strikeTexts[i].value = tourneyParams[5 + i];
 				}
 			}
-
-			tgpButton();
 		}
+		
+		if (params.bye !== null) {
+			tourneyParams = params.bye.split(",");
+			if (tourneyParams.length >= 4) 
+			{
+				document.getElementById("byeQuestion").checked = true;
+				byeQuestion();
+				document.getElementById("byePlayers1").value = tourneyParams[0];
+				document.getElementById("byeQuestion2").checked = (tourneyParams[1] === 't');
+				byeQuestion2();
+				document.getElementById("byePlayers2").value = tourneyParams[2];
+				document.getElementById("byeStrikes2").value = tourneyParams[3];
+				document.getElementById("byeStrikes3").value = tourneyParams[4];
+			}
+		}
+
+		if (params.tourney2 !== null) {
+			tourneyParams = params.tourney2.split(",");
+			if (tourneyParams.length >= 4) 
+			{
+				document.getElementById("finalsQuestion").checked = true;
+				qualifyQuestion2();
+				document.getElementById("strikes2").value = tourneyParams[3];
+				document.getElementById("groupCount2").value = tourneyParams[2];
+				document.getElementById("exactPlayers").checked = (tourneyParams[0] === 't');
+				let strikeFormat = tourneyParams[1];
+				if (strikeFormat === "F") document.getElementById("commonFormats-f").value = 1;
+				else if (strikeFormat === "P") document.getElementById("commonFormats-f").value = 2;
+				else if (strikeFormat === "1") document.getElementById("commonFormats-f").value = 3;
+				else if (strikeFormat === "L") document.getElementById("commonFormats-f").value = 4;
+				else if (strikeFormat === "S") document.getElementById("commonFormats-f").value = 5;
+				else if (strikeFormat === "O") document.getElementById("commonFormats-f").value = 6;
+				else document.getElementById("commonFormats-f").value = 1;
+				fillStrikesF();
+
+				if (tourneyParams.length >= 13)
+				{
+					var strikeTexts = document.getElementsByName('strikesF[]');
+					for (let i = 0; i < 9; i++) {
+						strikeTexts[i].value = tourneyParams[4 + i];
+					}
+				}
+			}
+		}
+		
+		if (tourneyParams.length >= 5) tgpButton();
 	}
 }
 
@@ -415,13 +459,49 @@ function clipboard() {
 	if (strikesCommon == "5") strikes = "S";
 	if (strikesCommon == "6") strikes = "O";
 	
-	var strikeTexts = document.getElementsByName('strikes[]');
+	let strikeTexts = document.getElementsByName('strikes[]');
 	let strikeDist = "";
 	for (let i = 0; i < 9; i++) {
 		strikeDist = strikeDist + strikeTexts[i].value + (i < 8 ? "," : "");
 	}
+	
+	let tourney1 = strikes + "," + players + "," + playersLeft + "," + groupCount + "," + strikeCount + "," + strikeDist;
+	
+	let bye1 = "";
 
-	navigator.clipboard.writeText("https://gameboy9.github.io/strikes.html?tourney1=" + strikes + "," + players + "," + playersLeft + "," + groupCount + "," + strikeCount + "," + strikeDist);
+	if (document.getElementById("byeQuestion").checked) {
+		let byePlayers = parseInt(document.getElementById("byePlayers1").value);
+		let byeQuestion2 = (document.getElementById("byeQuestion2").checked ? 't' : 'f');
+		let byePlayers2 = parseInt(document.getElementById("byePlayers2").value);
+		let byeStrikes = parseInt(document.getElementById("byeStrikes2").value);
+		let byeStrikes2 = parseInt(document.getElementById("byeStrikes3").value);
+
+		bye1 = '&bye=' + byePlayers + "," + byeQuestion2 + "," + byePlayers2 + "," + byeStrikes + "," + byeStrikes2;
+	}
+
+	let tourney2 = "";
+	if (document.getElementById("finalsQuestion").checked) {
+		let secondStage = (document.getElementById("exactPlayers").checked ? 't' : 'f');
+		groupCount = document.getElementById("groupCount2").value;
+		strikesCommon = document.getElementById("commonFormats-f").value;
+		strikeCount = parseInt(document.getElementById("strikes2").value);
+		if (strikesCommon == "1") strikes = "F";
+		if (strikesCommon == "2") strikes = "P";
+		if (strikesCommon == "3") strikes = "1";
+		if (strikesCommon == "4") strikes = "L";
+		if (strikesCommon == "5") strikes = "S";
+		if (strikesCommon == "6") strikes = "O";
+		
+		strikeTexts = document.getElementsByName('strikesF[]');
+		strikeDist = "";
+		for (let i = 0; i < 9; i++) {
+			strikeDist = strikeDist + strikeTexts[i].value + (i < 8 ? "," : "");
+		}
+		
+		tourney2 = '&tourney2=' + secondStage + ',' + strikes + ',' + groupCount + ',' + strikeCount + ',' + strikeDist;
+	}
+
+	navigator.clipboard.writeText("https://gameboy9.github.io/strikes.html?tourney1=" + tourney1 + bye1 + tourney2);
 }
 
 function getRandomInt(max) {
