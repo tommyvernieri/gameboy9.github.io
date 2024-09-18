@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="css/w3.css">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TGP Knockout Calculator</title>
+</head>
+
+<body>
+	<div w3-include-html="menu.html"></div>
+	
+	<div class="w3-container w3-row" style="margin-top: 64px;">
+		<input type="number" id="playerCount" name="playerCount" min="2" max="1000" value="50" />
+		<label for="playerCount">contestants in </label>
+		<input type="number" id="groupCount" name="groupCount" min="2" max="4" value="4" />
+		<label for="playerCount"> player groups.  The pace starts at </label>
+		<input type="number" id="strikes" name="strikes" min="1" max="1000" value="30" />
+		<label for="paceRound">points at round </label>
+		<input type="number" id="paceRound" name="paceRound" min="1" max="100" value="5" />
+		<label for="strikes">.  The pace will increase by the 1st place score each round.  Eliminations will continue until </label>
+		<input type="number" id="playersLeft" name="playersLeft" min="1" max="1000" value="1" />
+		<label for="playersLeft"> player(s) remain.</label>
+	</div>
+	
+	<div class="w3-container w3-row" style="margin-top: 16px;">
+		<label for="commonFormats">Common Formats:</label>
+		<select id="commonFormats" onchange="fillStrikes()">
+		   <option value="1" selected>IFPA scoring (7/5/3/1)
+		   <option value="2">League scoring (5/3/2/1)
+		   <option value="3">PAPA scoring (4/2/1/0)
+		</select>
+	</div>
+	
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<div class="w3-col s12 m12 l1"><b>2P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p21" name="p21" min="0" max="100" value="7" />
+			<input type="number" id="p22" name="p22" min="1" max="100" value="1" />
+		</div>
+	</div>
+	<div class="w3-row w3-container" style="margin-top: 8px;">
+		<div class="w3-col s12 m12 l1"><b>3P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p31" name="p31" min="0" max="100" value="7" />
+			<input type="number" id="p32" name="p32" min="0" max="100" value="4" />
+			<input type="number" id="p33" name="p33" min="1" max="100" value="1" />
+		</div>
+	</div>
+	<div class="w3-row w3-container" style="margin-top: 8px;">
+		<div class="w3-col s12 m12 l1"><b>4P Groups</b></div>
+		<div class="w3-col s12 m12 l4">
+			<input type="number" id="p41" name="p41" min="0" max="100" value="7" />
+			<input type="number" id="p42" name="p42" min="0" max="100" value="5" />
+			<input type="number" id="p43" name="p43" min="0" max="100" value="3" />
+			<input type="number" id="p44" name="p44" min="1" max="100" value="1" />
+		</div>
+	</div>
+	
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Tournament</button>
+	</div>
+
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<div class="w3-col s4 m4 l2"><b>Results</b></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Meaningful Games</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="MeaningfulGames"> </div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Approximate TGP</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ApproxTGP"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-top">Average Rounds</div>
+		<div class="w3-col s4 m4 l1 w3-border-top w3-right-align" id="AvgRounds">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Least / Most rounds</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremeRounds"> </div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-bottom">5th-95th %tile</div>
+		<div class="w3-col s4 m4 l1 w3-right-align w3-border-bottom" id="ReasonableRounds">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Average end players</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="AvgPlayers"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Least / Most players</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="ExtremePlayers"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-bottom">5th-95th %tile</div>
+		<div class="w3-col s4 m4 l1 w3-border-bottom w3-right-align" id="ReasonablePlayers">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Rounds-2P</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="2pGames"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Rounds-3P</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="3pGames"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Rounds-4P</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="4pGames"></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Avg Rounds-All</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TotalGames"></div>
+	</div>
+	
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			DISCLAIMER:  This calculator assumes that the highest rated player will defeat the lowest rated player 7 times out of 8.
+		</h6>
+	</div>
+
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			This calculator is written by Patrick F. aka gameboyf9, uses 10,000 simulations AND IS IN BETA.  All are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there any problems or inaccuracies are found.
+		</h6>
+	</div>
+</body>
+<script src="js/pacematch.js"></script>
+<script src="js/menu.js"></script>
+<script>includeHTML();</script>
+</html>
