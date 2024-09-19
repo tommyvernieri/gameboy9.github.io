@@ -60,6 +60,7 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 	let playerList = [];
 	let roundResult = [];
 	let finalEndPlayers = [];
+	let firstCutPlayers = [];
 	let mGamesList = [];
 	let playerGames = [ 0, 0, 0 ];
 	let firstIteration = "";
@@ -139,6 +140,9 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 			if (h == 0)
 				console.log("R" + round + " -  Players:  " + survivingPlayers + " - 4P:  " + singlePlayerMatches[2] + " - 3P:  " + singlePlayerMatches[1] + " - 2P:  " + singlePlayerMatches[0]);
 
+			if (round == startRound)
+				firstCutPlayers.push(survivingPlayers);
+			
 			if (singlePlayerMatches[0] >= singlePlayerMatches[1] && singlePlayerMatches[0] >= singlePlayerMatches[2]) iterationRounds[0]++;
 			else if (singlePlayerMatches[1] >= singlePlayerMatches[2]) iterationRounds[1]++;
 			else iterationRounds[2]++;
@@ -157,12 +161,14 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 
 	let roundAvg = average(roundResult);
 	let endPlayersAvg =  average(finalEndPlayers);
+	let cutPlayersAvg =  average(firstCutPlayers);
 	let totalGames = average(mGamesList);
 	let totalTGP = average(mGamesList);
 	let pct5 = parseInt(iterations * 0.05);
 	let pct95 = parseInt(iterations * 0.95);
 	roundResult.sort(function(a, b) { return a - b; });
 	finalEndPlayers.sort(function(a, b) { return a - b; });
+	firstCutPlayers.sort(function(a, b) { return a - b; });
 
 	if (type === 1) {
 		document.getElementById("2pGames").innerHTML = (playerGames[0] / iterations).toFixed(2);
@@ -177,6 +183,9 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 		document.getElementById("AvgPlayers").innerHTML = endPlayersAvg.toFixed(2);
 		document.getElementById("ExtremePlayers").innerHTML = Math.min(...finalEndPlayers) + " / " + Math.max(...finalEndPlayers);
 		document.getElementById("ReasonablePlayers").innerHTML = finalEndPlayers[pct5] + " / " + finalEndPlayers[pct95];
+		document.getElementById("AvgCut").innerHTML = cutPlayersAvg.toFixed(2);
+		document.getElementById("ExtremeCut").innerHTML = Math.min(...firstCutPlayers) + " / " + Math.max(...firstCutPlayers);
+		document.getElementById("ReasonableCut").innerHTML = firstCutPlayers[pct5] + " / " + firstCutPlayers[pct95];
 	}
 }
 
