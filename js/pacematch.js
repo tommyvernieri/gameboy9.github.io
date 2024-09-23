@@ -47,7 +47,7 @@ function fillStrikes() {
 	}
 }
 
-function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, finalPlayers, p21, p22, p31, p32, p33, p41, p42, p43, p44, type) {	
+function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, finalPlayers, paceIncrement, p21, p22, p31, p32, p33, p41, p42, p43, p44, type) {	
 	let strikeDist = [ 
 		[ p21, p22, p22, p22], 
 		[ p31, p32, p33, p33], 
@@ -89,9 +89,8 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 			if (round == startRound) {
 				finalPaceStrikes = finalStrikes;
 			} else if (round >= startRound) {
-				finalPaceStrikes += strikeDist[2][0];
+				finalPaceStrikes += paceIncrement;
 			}
-			if (h == 0) console.log(round + " / " + finalPaceStrikes);
 
 			allowed = [...playerList];
 
@@ -138,7 +137,7 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 				}				
 			}
 			if (h == 0)
-				console.log("R" + round + " -  Players:  " + survivingPlayers + " - 4P:  " + singlePlayerMatches[2] + " - 3P:  " + singlePlayerMatches[1] + " - 2P:  " + singlePlayerMatches[0]);
+				console.log("R" + round + " -  Players:  " + survivingPlayers + " - 4P:  " + singlePlayerMatches[2] + " - 3P:  " + singlePlayerMatches[1] + " - 2P:  " + singlePlayerMatches[0] + " - Pace: " + finalPaceStrikes);
 
 			if (round == startRound)
 				firstCutPlayers.push(survivingPlayers);
@@ -190,11 +189,19 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 }
 
 function tgpButton() {
+	let paceIncrement = parseInt(document.getElementById("paceIncrement").value);
+	let paceMinimum = (parseInt(document.getElementById("p41").value) + parseInt(document.getElementById("p44").value)) / 2 + 1;
+	if (paceIncrement < paceMinimum) {
+		alert("Invalid increment per round.  Must have a minimum of " + paceMinimum);
+		return;
+	}
+	
 	calcKnockoutTournament(parseInt(document.getElementById("playerCount").value),
 		parseInt(document.getElementById("groupCount").value),
 		parseInt(document.getElementById("paceRound").value),
 		parseInt(document.getElementById("strikes").value),
 		parseInt(document.getElementById("playersLeft").value),
+		parseInt(document.getElementById("paceIncrement").value),
 		parseInt(document.getElementById("p21").value),
 		parseInt(document.getElementById("p22").value),
 		parseInt(document.getElementById("p31").value),
