@@ -157,7 +157,7 @@ function calcInterpolatedDoubleElimTournament(players, evWinnersRound, evLosersR
 		evWofL = 0;
 		lowEv = evWofL;
 		highEv = evWofL;
-} else {
+	} else {
 		if (nearlyEqual(players, fullBracket)) {
 			// A full bracket.
 			evWofL = calcLosersBracket(1, players, fullBracket, evWinnersRound, evLosersRound);
