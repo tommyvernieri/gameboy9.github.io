@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="css/w3.css">
+
 <head>
-    <meta charset="UTF-8">
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TGP Knockout Calculator</title>
+	<title>TGP Knockout Calculator</title>
 </head>
 
 <body>
 	<div w3-include-html="menu.html"></div>
-	
+
 	<div class="w3-container w3-row" style="margin-top: 64px;">
-		<input type="number" id="playerCount" name="playerCount" min="3" max="1000" value="8" />
+		<input type="number" id="playerCount" name="playerCount" min="3" max="4096" value="8" />
 		<label for="playerCount">contestants in a double elimination bracket.</label>
 	</div>
-	
+
 	<div class="w3-container w3-row" style="margin-top: 16px;">
 		<label for="winnersCommonFormats">Winner's Bracket Common Formats:</label>
 		<select id="winnersCommonFormats" onchange="fillWinnersBracket()">
@@ -24,33 +25,35 @@
 			<option value="4">Best-of-7</option>
 		</select>
 	</div>
-	
+
 	<div class="w3-container w3-row" style="margin-top: 16px;">
 		<label for="losersCommonFormats">Loser's Bracket Common Formats:</label>
 		<select id="losersCommonFormats" onchange="fillLosersBracket()">
+			<option value="0">None - Single elimination</option>
 			<option value="1" selected>Best-of-1</option>
 			<option value="2">Best-of-3</option>
 			<option value="3">Best-of-5</option>
 			<option value="4">Best-of-7</option>
 		</select>
 	</div>
-	
+
 	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<div class="w3-col s12 m12 l2"><b>Winner's bracket match expected games</b></div>
 		<div class="w3-col s12 m12 l4">
-			<input type="number" id="evw" name="evw" min="1" max="50" value="2.5" />
+			<input type="number" id="evw" name="evw" min="1" max="50" value="2.5" step="0.5" />
 		</div>
 	</div>
-	
+
 	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<div class="w3-col s12 m12 l2"><b>Loser's bracket match expected games</b></div>
 		<div class="w3-col s12 m12 l4">
-			<input type="number" id="evl" name="evl" min="0" max="50" value="1" />
+			<input type="number" id="evl" name="evl" min="0" max="50" value="1" step="0.5" />
 		</div>
 	</div>
-	
+
 	<div class="w3-row w3-container" style="margin-top: 16px;">
-		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Tournament</button>
+		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate
+			Tournament</button>
 	</div>
 
 	<div class="w3-row w3-container" style="margin-top: 16px;">
@@ -80,14 +83,17 @@
 		<div class="w3-col s4 m4 l2 ">Estimate upper bound</div>
 		<div class="w3-col s4 m4 l1 w3-right-align" id="WofLEvUpper"> </div>
 	</div>
-	
+
 	<div class="w3-container" style="margin-top: 32px;">
 		<h6 class="w3-opacity">
-			This calculator is written by Patrick F. aka gameboyf9, with contributions by Tommy V. AND IS IN BETA.  All are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there any problems or inaccuracies are found.
+			This calculator is written by Patrick F. aka gameboyf9, with contributions by Tommy V. AND IS IN BETA. All
+			are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue
+			if there any problems or inaccuracies are found.
 		</h6>
 	</div>
 </body>
 <script src="js/doubleelim.js"></script>
 <script src="js/menu.js"></script>
 <script>includeHTML();</script>
+
 </html>

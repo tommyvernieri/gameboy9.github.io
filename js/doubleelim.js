@@ -13,7 +13,9 @@ function fillWinnersBracket() {
 
 function fillLosersBracket() {
 	let value = document.getElementById("losersCommonFormats").value;
-	if (value === "1") {
+	if (value === "0") {
+		document.getElementById("evl").value = 0;
+	} else if (value === "1") {
 		document.getElementById("evl").value = 1;
 	} else if (value === "2") {
 		document.getElementById("evl").value = 2.5;
@@ -51,7 +53,7 @@ function calcWinnersBracket(playersLeft, totalPlayers, fullBracket, evWinnersRou
 		// Assume everyone plays a winners round match and recurse
 		ev = evWinnersRound + calcWinnersBracket(playersLeft * 2, totalPlayers, fullBracket, evWinnersRound);
 	}
-	
+
 	return ev;
 }
 
@@ -125,7 +127,7 @@ function calcLosersBracket(playersLeft, totalPlayers, fullBracket, evWinnersRoun
 		let evAdvancingLoser = evLosersRound + calcLosersBracket(playersLeft * 2, totalPlayers, fullBracket, evWinnersRound, evLosersRound);
 		ev = evLosersRound + 0.5 * (evNewLoser + evAdvancingLoser);
 	}
-	
+
 	return ev;
 }
 
@@ -191,7 +193,7 @@ function calcInterpolatedDoubleElimTournament(players, evWinnersRound, evLosersR
 		// Calculate the grand finals
 		let evSingleMatchGrandFinals = evWofW + evWinnersRound;
 		let evTwoMatchGrandFinals = evWinnersRound + evLosersRound + 0.5 * (evWofW + evWofL);
-		ev = 0.5 * (evSingleMatchGrandFinals + evTwoMatchGrandFinals);	
+		ev = 0.5 * (evSingleMatchGrandFinals + evTwoMatchGrandFinals);
 	}
 
 	// Update display
@@ -199,7 +201,7 @@ function calcInterpolatedDoubleElimTournament(players, evWinnersRound, evLosersR
 	document.getElementById("WofLEv").innerHTML = evWofL.toFixed(3);
 	document.getElementById("WofLEvLower").innerHTML = lowEv.toFixed(3);
 	document.getElementById("WofLEvUpper").innerHTML = highEv.toFixed(3);
-	
+
 	return ev;
 }
 
@@ -239,19 +241,19 @@ function validateParameters() {
 		alert("Invalid player count. Must have a minimum of " + minPlayerCount + " players.");
 		return false;
 	}
-	
+
 	if (playerCount > maxPlayerCount) {
 		alert("Invalid player count. Must have a maximum of " + maxPlayerCount + " players.");
 		return false;
 	}
-	
+
 	return true;
 }
 
 function tgpButton() {
 	var parametersAreValid = validateParameters();
 	if (!parametersAreValid) return;
-	
+
 	calcDoubleElimTournament(parseInt(document.getElementById("playerCount").value),
 		parseFloat(document.getElementById("evw").value),
 		parseFloat(document.getElementById("evl").value));
@@ -266,7 +268,7 @@ function average(numbers) {
 	for (let i = 0; i < numbers.length; i++) {
 		sum += numbers[i];
 	}
-	
+
 	return sum / numbers.length;
 }
 
