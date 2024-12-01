@@ -1,7 +1,37 @@
-<div class="w3-row w3-top w3-bar w3-black">
-	<a href="strikes.html" class="w3-bar-item w3-button">Knockout</a>
-	<a href="matchplay.html" class="w3-bar-item w3-button">Matchplay</a>
-	<a href="targetmatch.html" class="w3-bar-item w3-button">Target Matchplay</a>
-	<a href="pacematch.html" class="w3-bar-item w3-button">Pace Matchplay</a>
-	<a href="doubleelim.html" class="w3-bar-item w3-button">Double Elimination</a>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<style>
+		/* Style the hamburger icon */
+		.hamburger {
+			display: none;
+			font-size: 30px;
+			cursor: pointer;
+		}
+
+		/* Hide menu items on small screens */
+		@media screen and (max-width: 600px) {
+			.w3-bar-item {
+				display: none;
+			}
+
+			.hamburger {
+				display: block;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="w3-row w3-top w3-bar w3-black">
+		<span class="hamburger" onclick="toggleMenu()">&#9776;</span>
+		<a href="strikes.html" class="w3-bar-item w3-button">Knockout</a>
+		<a href="matchplay.html" class="w3-bar-item w3-button">Matchplay</a>
+		<a href="targetmatch.html" class="w3-bar-item w3-button">Target Matchplay</a>
+		<a href="pacematch.html" class="w3-bar-item w3-button">Pace Matchplay</a>
+		<a href="doubleelim.html" class="w3-bar-item w3-button">Double Elimination</a>
+	</div>
+</body>
+</html>

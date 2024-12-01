@@ -25,3 +25,14 @@ function includeHTML() {
     }
   }
 };
+
+function toggleMenu() {
+    const items = document.querySelectorAll('.w3-bar-item');
+    items.forEach(item => {
+        if (item.style.display === 'block') {
+            item.style.display = 'none';
+        } else {
+            item.style.display = 'block';
+        }
+    });
+}
