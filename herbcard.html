@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="css/w3.css">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TGP Knockout Calculator</title>
+</head>
+
+<body>
+	<div w3-include-html="menu.html"></div>
+
+	<div class="w3-container w3-row" style="margin-top: 16px;">
+		<div class="w3-col s6 m6 l1"><b>Herb/Card Format:</b></div>
+		<select id="commonFormats">
+			<option value="1" selected>Best Game/Herb
+			<option value="2">Card
+		</select>
+	</div>
+
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>Number of Machines</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="machines" name="machines" min="1" max="1000" value="6" /></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>Number of Scores Counting</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="scoresCounting" name="scoresCounting" min="1" max="1000" value="10" /></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>Number of Attempts</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="attempts" name="attempts" min="1" max="1000" value="40" /></div>
+		<div class="w3-col s4 m4 l1"><label for="unlimited"><b>Unlimited</b><input type="checkbox" id="unlimited" value="1"></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>Number of Qualifying Hours</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="qualHours" name="qualHours" min="1" max="1000" value="20" /></div>
+	</div>
+		
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Qualifying</button>
+	</div>
+
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<div class="w3-col s6 m6 l2"><b>Results</b></div>
+		<div class="w3-col s6 m6 l1 w3-right-align"><b> </b></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2 w3-border-top">Meaningful Games</div>
+		<div class="w3-col s6 m6 l1 w3-border-top w3-right-align" id="meaningfulGames">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Format Booster</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="formatBoost">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Subtotal TGP</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="subTGPTotal">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Qualifying Time Booster</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="qualTimeBoost">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Final TGP *</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="finalTGP">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Certified eligible? **</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="attCertified">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Exact Attempts for Hybrid</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="attHybrid">&nbsp;</div>
+	</div>
+
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			* You MUST have a <b>direct play finals</b> portion with this format, with 10%-50% of the players advancing.<br>
+			** To fully achieve Certified status, the finals format is under more strict rules.  Please see items g, j, k, and l of the <a href="https://www.ifpapinball.com/certified/">IFPA Certified Tournaments</a> page.
+		</h6>
+	</div>
+
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			This calculator is written by Patrick F. aka gameboyf9, AND IS IN BETA.  All are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there any problems or inaccuracies are found.
+		</h6>
+	</div>
+</body>
+<script src="js/herbcard.js"></script>
+<script src="js/menu.js"></script>
+<script>includeHTML();</script>
+</html>
