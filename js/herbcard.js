@@ -72,6 +72,7 @@ function calcHerbCard(format, machines, scoresCounting, attempts, unlimited, qua
 	
 	document.getElementById("finalTGP").innerHTML = (tgp > 200 ? "200.00% (maxed - " + tgp.toFixed(2) + "%)" : tgp.toFixed(2) + "%");
 	document.getElementById("attCertified").innerHTML = certifiedEligible;
+	document.getElementById("certReq").innerHTML = "Min. " + machines * 2 + " attempts, 20+ qual hrs";
 	document.getElementById("attHybrid").innerHTML = machines * 4;
 }
 
