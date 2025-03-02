@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="css/w3.css">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFPA Calculators - Matchplay Finals</title>
+</head>
+
+<body>
+	<div w3-include-html="menu.html"></div>
+
+	<div class="w3-container" style="margin-top: 64px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b># of contestants</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="playerCount" name="playerCount" min="1" max="999" value="24" /></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b># receiving 1 bye</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="player1Bye" name="player1Bye" min="1" max="999" value="8" /></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b># receiving 2 byes</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="player2Bye" name="player2Bye" min="1" max="999" value="0" /></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>Player group size</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="groupsize" name="groupsize" min="3" max="4" value="4" /></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b>Minimum games / round</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="roundGames" name="roundGames" min="1" max="9" value="3" /></div>
+	</div>
+	<div class="w3-container" style="margin-top: 16px;" id="finals">
+		<div class="w3-col s4 m4 l1"><b># advancing to next round</b></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="advNextRound" name="advNextRound" min="1" max="3" value="2" /></div>
+	</div>
+		
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="tgpButton()">Calculate Matchplay Finals</button>
+	</div>
+
+	<div class="w3-row w3-container" style="margin-top: 16px;">
+		<div class="w3-col s4 m4 l2"><b>Results</b></div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-top" id="PlayersByRound1">Players By Round</label></div>
+		<div class="w3-col s4 m4 l1 w3-border-top w3-right-align" id="PlayersByRound2">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2 w3-border-top">Expected rounds played by winner</div>
+		<div class="w3-col s4 m4 l1 w3-border-top w3-right-align" id="AvgRounds">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">Total meaningful games</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="MGames">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s4 m4 l2">TGP</div>
+		<div class="w3-col s4 m4 l1 w3-right-align" id="TGP">&nbsp;</div>
+	</div>
+
+	<div class="w3-container" style="margin-top: 32px;">
+		<h6 class="w3-opacity">
+			This calculator is written by Patrick F. aka gameboyf9, uses 10,000 simulations AND IS IN BETA.  All are welcome to <a href="https://github.com/gameboy9/gameboy9.github.io">check my work</a> and open an issue if there any problems or inaccuracies are found.
+		</h6>
+	</div>
+</body>
+<script src="js/mpfinals.js"></script>
+<script src="js/menu.js"></script>
+<script>includeHTML();</script>
+</html>

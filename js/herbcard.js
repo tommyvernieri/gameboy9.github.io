@@ -66,7 +66,7 @@ function calcHerbCard(format, machines, scoresCounting, attempts, unlimited, qua
 	let tgp = subTGP + qualTimeBoost;
 
 	document.getElementById("meaningfulGames").innerHTML = scoresCounting + " (" + scoresCounting * 4 + ".00% TGP)";
-	document.getElementById("formatBoost").innerHTML = (tgpBase / 4) + "X";
+	document.getElementById("formatBoost").innerHTML = (tgpBase / 4) + "X" + (tgpBase === 8 ? " (Unlimited Herb)" : tgpBase === 12 ? " (Hybrid)" : tgpBase === 16 ? " (Unlimited Card)" : "");
 	document.getElementById("subTGPTotal").innerHTML = (subTGP > 200 ? "200.00% (maxed - " + subTGP.toFixed(2) + "%)" : subTGP.toFixed(2) + "%")
 	document.getElementById("qualTimeBoost").innerHTML = qualTimeBoost + ".00%";
 	
