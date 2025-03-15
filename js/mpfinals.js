@@ -19,12 +19,18 @@ function calcKnockoutTournament(players, player1Bye, player2Bye, groupSize, roun
 		let rounds = 1;
 		let avgRounds = 0.00;
 		let mGames = 0.0;
+
+		let certified = true;
+		if (players < 24 || roundGames < 3) certified = false;
+		if (groupSize == 4 && advNextRound == 1) certified = false;
+
 		// Force a reduction in the # of players advancing if the original value results in an infinite loop
 		let round2Players = (Math.ceil(round1Players / groupSize) * advNextRound) + player1Bye;
 		if (round2Players >= round1Players && player1Bye === 0) {
 			advNextRound--;
 			round2Players = (Math.ceil(round1Players / groupSize) * advNextRound) + player1Bye;
 		}
+
 		// Determine % chance someone coming out of rounds 1 or 2 would win the tournament and assess expected number of rounds accordingly.
 		let roundPortion2 = (round2Players * advNextRound / groupSize) / ((round2Players * advNextRound / groupSize) + player2Bye);
 		let roundPortion1 = (round1Players * advNextRound / groupSize) / ((round1Players * advNextRound / groupSize) + player1Bye) * roundPortion2;
@@ -57,6 +63,8 @@ function calcKnockoutTournament(players, player1Bye, player2Bye, groupSize, roun
 				advNextRound--;
 				numPlayers = (Math.ceil(round1Players / groupSize) * advNextRound) + player2Bye;
 			}
+
+			if (numPlayers < 16 && player2Bye >= 0) certified = false;
 			
 			if (numPlayers >= groupSize) {
 				rounds = 3;
@@ -89,13 +97,15 @@ function calcKnockoutTournament(players, player1Bye, player2Bye, groupSize, roun
 		document.getElementById("AvgRounds").innerHTML = avgRounds.toFixed(2);
 		document.getElementById("MGames").innerHTML = mGames.toFixed(1);
 		document.getElementById("TGP").innerHTML = (Math.round(mGames) * 4).toFixed(2) + "%";
-		
+
+		document.getElementById("Certified").innerHTML = (certified ? "Yes" : "No");
 	} else {
 		document.getElementById("PlayersByRound1").innerHTML = "Players By Round";
 		document.getElementById("PlayersByRound2").innerHTML = "Invalid Tournament<br>" + invalid.substring(4);
 		document.getElementById("AvgRounds").innerHTML = "";
 		document.getElementById("MGames").innerHTML = "";
 		document.getElementById("TGP").innerHTML = "";
+		document.getElementById("Certified").innerHTML = "";
 	}
 }
 

@@ -1,46 +1,4 @@
 function calcHerbCard(format, machines, scoresCounting, attempts, unlimited, qualHours) {
-	/*
-	Number of machines: M
-	Hours of qualifying: H
-	Entry style: S (Unlimited Best Game / Hybrid Best Game / Limited Best Game / Unlimited Card / Limited Card)
-	Number of entries: E (disabled for Unlimited; locked to M x 4 for Hybrid)
-	Scores counted: C
-
-	tgpPct = 0;
-	certifiedEligible = false;
-
-	if (S == Unlimited Best Game) {
-		if (H >= 20) {
-			tgpPct += 8 * C;
-			if (C >= 5) {
-				certifiedEligible = true;
-			}
-		} else {
-			tgpPct += 4 * C;
-		}
-		tgpPct += min(20, H);
-	} elseif (S == Unlimited Card) {
-		if (H >= 20) {
-			tgpPct += 16 * C;
-			if (C >= 5) {
-				certifiedEligible = true;
-			}
-		} else {
-			tgpPct += 4 * C;
-		}
-		tgpPct += min(20, H);
-	} elseif (S == Hybrid Best Game) {
-		tgpPct += 12 * C;
-		if (C >= 5 && H >= 20) {
-			certifiedEligible = true;
-		}
-	} elseif (S == Limited Best Game || S == Limited Card) {
-		tgpPct += 4 * C;
-		if (C >= 5 && H >= 20 && E >= 2 * M) {
-			certifiedEligible = true;
-		}
-	}
-	*/
 	let tgpBase = 4;
 	let certifiedEligible = false;
 	if (format === 1) // Herb / Best Game
