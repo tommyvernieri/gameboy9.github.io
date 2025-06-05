@@ -24,7 +24,7 @@ function calcHerbCard(format, machines, scoresCounting, attempts, unlimited, qua
 	let tgp = subTGP + qualTimeBoost;
 
 	document.getElementById("meaningfulGames").innerHTML = scoresCounting + " (" + scoresCounting * 4 + ".00% TGP)";
-	document.getElementById("formatBoost").innerHTML = (tgpBase / 4) + "X" + (tgpBase === 8 ? " (Unlimited Herb)" : tgpBase === 12 ? " (Hybrid)" : tgpBase === 16 ? " (Unlimited Card)" : "");
+	document.getElementById("formatBoost").innerHTML = (tgpBase / 4) + "X" + (tgpBase === 8 ? " (Unlimited Herb)" : tgpBase === 12 ? " (Hybrid) ***" : tgpBase === 16 ? " (Unlimited Card)" : "");
 	document.getElementById("subTGPTotal").innerHTML = (subTGP > 200 ? "200.00% (maxed - " + subTGP.toFixed(2) + "%)" : subTGP.toFixed(2) + "%")
 	document.getElementById("qualTimeBoost").innerHTML = qualTimeBoost + ".00%";
 	
@@ -32,7 +32,11 @@ function calcHerbCard(format, machines, scoresCounting, attempts, unlimited, qua
 	document.getElementById("attCertified").innerHTML = certifiedEligible;
 	document.getElementById("certReq").innerHTML = "Min. " + machines * 2 + " attempts, 20+ qual hrs";
 	document.getElementById("attHybrid").innerHTML = machines * 4;
+	document.getElementById("maxMachine").innerHTML = qualHours * 7.5; // 8 minutes per machine
+	document.getElementById("maxOverall").innerHTML = machines * qualHours * 7.5; // 8 minutes per machine
+	document.getElementById("maxPlayers").innerHTML = (unlimited ? "N/A" : Math.floor(machines * qualHours * 7.5 / attempts));
 }
+
 
 function validateParameters() {
 	return true;

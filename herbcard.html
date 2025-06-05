@@ -28,7 +28,7 @@
 	</div>
 	<div class="w3-container" style="margin-top: 16px;" id="finals">
 		<div class="w3-col s4 m4 l1"><b>Number of Attempts</b></div>
-		<div class="w3-col s4 m4 l1"><input type="number" id="attempts" name="attempts" min="1" max="1000" value="40" /></div>
+		<div class="w3-col s4 m4 l1"><input type="number" id="attempts" name="attempts" min="1" max="1000" value="24" /></div>
 		<div class="w3-col s4 m4 l1"><label for="unlimited"><b>Unlimited</b><input type="checkbox" id="unlimited" value="1"></div>
 	</div>
 	<div class="w3-container" style="margin-top: 16px;" id="finals">
@@ -76,11 +76,25 @@
 		<div class="w3-col s6 m6 l2">Exact Attempts for Hybrid</div>
 		<div class="w3-col s6 m6 l1 w3-right-align" id="attHybrid">&nbsp;</div>
 	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Approximate maximum plays per machine</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="maxMachine">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Approximate maximum plays overall</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="maxOverall">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-container">
+		<div class="w3-col s6 m6 l2">Approximate maximum players</div>
+		<div class="w3-col s6 m6 l1 w3-right-align" id="maxPlayers">&nbsp;</div>
+	</div>
 
 	<div class="w3-container" style="margin-top: 32px;">
 		<h6 class="w3-opacity">
 			* You MUST have a <b>direct play finals</b> portion with this format, with 10%-50% of the players advancing.<br>
-			** To fully achieve Certified status, the finals format is under more strict rules.  Please see items g, j, k, and l of the <a href="https://www.ifpapinball.com/certified/">IFPA Certified Tournaments</a> page.
+			** To fully achieve Certified status, the finals format is under more strict rules.  Please see items g, j, k, and l of the <a href="https://www.ifpapinball.com/certified/">IFPA Certified Tournaments</a> page.<br>
+			*** Hybrid formats requires that at least 10% of all players must complete all available attempts or the format will be reverted to "unlimited", which is a 2x format booster instead of 3x.<br>
+			For the last three rows, the calculator assumes that a play on average will take approximately 8 minutes, counting transition time between attempts.  This is a rough estimate, and actual times may vary based on the number of players, machine settings, and other factors.<br>
 		</h6>
 	</div>
 
