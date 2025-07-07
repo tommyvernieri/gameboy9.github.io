@@ -388,7 +388,7 @@ function runTournament(players, groupCount, finalStrikes, finalPlayers, playerGa
 		{
 			let match = []
 			let matchPlayers = 4;
-			if (groupCount >= 3 && (allowed.length === 9 || allowed.length === 6 || allowed.length === 5 || allowed.length === 3))
+			if ((groupCount === 3 && allowed.length > 2) || (groupCount === 4 && (allowed.length === 9 || allowed.length === 6 || allowed.length === 5 || allowed.length === 3)))
 				matchPlayers = 3;
 			else if (groupCount === 2 || allowed.length === 2)
 				matchPlayers = 2;
