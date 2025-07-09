@@ -12,14 +12,16 @@
 			white-space: nowrap;
 		}
 
-		.border-left-thick {
-			border-left: 5px solid #ccc;
+		.nowrap {
+			white-space: nowrap;
 		}
 
+		/* Used in mergequeues.js */
 		.queue-list-flex {
 			flex-wrap: wrap;
 		}
 
+		/* Used in mergequeues.js */
 		.queue-flex {
 			flex-grow: 0;
 			flex-shrink: 0;
@@ -28,48 +30,66 @@
 	</style>
 </head>
 
-<body onload="initializeFromStorage()">
+<body onload="initializeSettings()">
 	<div w3-include-html="menu.html"></div>
 
-	<div class="w3-container w3-row" style="margin-top: 64px;">
-		<label for="matchPlayApiKey">Match Play Events API Token: </label>
-		<input type="password" id="matchPlayApiKey" name="matchPlayApiKey" />
-		<a class="w3-button" href="https://app.matchplay.events/api-docs/#authenticating-requests" title="Match Play Events API Authentication Documentation">🛈</a>
-		<a class="w3-button" href="https://app.matchplay.events/account/tokens" title="Create an API Token in your MPE Account Settings">🔑</a>
-		<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" onclick="saveApiKey()" title="Writes your key to browser local storage">Save API Key</button>
-		<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" onclick="clearSavedApiKey()" title="Clears any key saved in browser local storage">Clear Saved Key</button>
+	<!-- Prevents the menu from covering the content -->
+	<div class="w3-container w3-row" style="margin-top: 48px;"></div>
+
+	<div id="parametersSection">
+		<div class="w3-container w3-row" style="margin-top: 16px;">
+			<label for="matchPlayApiKey">Match Play Events API Token: </label>
+			<input type="password" id="matchPlayApiKey" name="matchPlayApiKey" />
+		</div>
+		<div class="w3-container w3-row w3-text-red w3-hide" style="margin-top: 8px;" id="matchPlayKeyRequiredMessage">
+			A Match Play Events API Token is required. If you don't already have one, click Get Token to visit your MPE account settings page and create one.
+		</div>
+		<div class="w3-container w3-row" style="margin-top: 8px;">
+			<a class="w3-button" href="https://app.matchplay.events/api-docs/#authenticating-requests" title="Match Play Events API Authentication Documentation">🛈 Info</a>
+			<a class="w3-button" href="https://app.matchplay.events/account/tokens" title="Create an API Token in your MPE Account Settings">🔑 Get Token</a>
+			<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" onclick="saveApiKey()" id="saveApiKeyButton" title="Writes this token to browser local storage">Save API Token</button>
+			<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" onclick="clearSavedApiKey()" id="clearSavedApiKeyButton" title="Clears any token saved in browser local storage">Clear Saved Token</button>
+			<span id="saveKeyStatus"></span>
+		</div>
+		
+		<div class="w3-container w3-row" style="margin-top: 16px;">
+			<label for="tournamentIdA">Tournament 1: </label>
+			<input type="number" id="tournamentIdA" name="tournamentIdA" />
+		</div>
+		<div class="w3-container w3-row" style="margin-top: 8px;">
+			<label for="tournamentShortNameA">Queue name: </label>
+			<input type="text" id="tournamentShortNameA" name="tournamentShortNameA" />
+			(optional)
+		</div>
+		
+		<div class="w3-container w3-row" style="margin-top: 16px;">
+			<label for="tournamentIdB">Tournament 2: </label>
+			<input type="number" id="tournamentIdB" name="tournamentIdB" />
+		</div>
+		<div class="w3-container w3-row" style="margin-top: 8px;">
+			<label for="tournamentShortNameB">Queue name: </label>
+			<input type="text" id="tournamentShortNameB" name="tournamentShortNameB" />
+			(optional)
+		</div>
+		<div class="w3-container w3-row" style="margin-top: 8px;">
+			<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" onclick="saveParameters()" id="saveParametersButton" title="Writes these parameters to local storage">Save Settings</button>
+			<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" onclick="clearSavedParameters()" id="clearSavedParametersButton" title="Clears any parameters saved in browser local storage">Clear Saved Settings</button>
+			<span id="saveParametersStatus"></span>
+		</div>
 	</div>
-	
-	<div class="w3-container w3-row" style="margin-top: 16px;">
-		<label for="tournamentIdA">Tournament 1: </label>
-		<input type="number" id="tournamentIdA" name="tournamentIdA" value="198946" />
-	</div>
-	<div class="w3-container w3-row" style="margin-top: 8px;">
-		<label for="tournamentShortNameA">Queue name: </label>
-		<input type="text" id="tournamentShortNameA" name="tournamentShortNameA" value="Open" />
-		(optional)
-	</div>
-	
-	<div class="w3-container w3-row" style="margin-top: 16px;">
-		<label for="tournamentIdB">Tournament 2: </label>
-		<input type="number" id="tournamentIdB" name="tournamentIdB" value="199019" />
-	</div>
-	<div class="w3-container w3-row" style="margin-top: 8px;">
-		<label for="tournamentShortNameB">Queue name: </label>
-		<input type="text" id="tournamentShortNameB" name="tournamentShortNameB" value="Women's" />
-		(optional)
-	</div>
-	
+
 	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<button class="w3-button w3-green w3-hover-black w3-round" type="button" onclick="loadQueuesButton()">Load Queues</button>
 		<button class="w3-button w3-pale-red w3-hover-black w3-round" type="button" onclick="loadPlayersButton()">Load Missing Players</button>
 		<button class="w3-button w3-pale-green w3-hover-black w3-round" type="button" id="startAutoLoadButton" onclick="startAutoLoadQueuesButton()">Start Auto-refresh</button>
 		<button class="w3-button w3-pale-blue w3-hover-black w3-round w3-hide" type="button" id="stopAutoLoadButton" onclick="stopAutoLoadQueuesButton()">Stop Auto-refresh</button>
-		<span class="w3-hide" id="lastUpdated">Last updated: never</span>
+		<span class="nowrap w3-hide" id="lastUpdated">Last updated: never</span>
+		<button class="w3-button w3-dark-grey w3-hover-black w3-round w3-hide" type="button" id="showParametersButton" onclick="showParameters()">Show Parameters</button>
+		<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" id="hideParametersButton" onclick="hideParameters()">Hide Parameters</button>
 	</div>
 
 	<div class="w3-row w3-container w3-hide" style="margin-top: 16px;" id="queueSummaryTitle">
-		<h2 class="w3-col s12 m10 l8">Queue Summary</h2>
+		<h3 class="w3-col s12 m10 l8">Queue Summary</h3>
 	</div>
 	<div class="w3-row w3-container w3-hide" id="queueSummaryHeader">
 		<div class="w3-col s3 m3 l3"><b>Arena</b></div>
@@ -84,22 +104,19 @@
 		<div class="w3-col s3 m3 l3 w3-border-top truncate"></div>
 	</div>
 
-	<div class="w3-row w3-container w3-hide" style="margin-top: 16px;" id="fullQueuesTitle">
-		<h2 class="w3-col s12 m10 l8">Full Queues</h2>
-	</div>
-	<div class="w3-row w3-container w3-hide" style="margin-top: 16px;" id="queueNameTemplate">
-		<h3 class="w3-col s12 m10 l8 truncate">Arena</h3>
+	<div class="w3-row w3-container w3-hide" style="margin-top: 8px;" id="queueNameTemplate">
+		<h4 class="w3-col s12 m10 l8 truncate">Arena</h4>
 	</div>
 	<div class="w3-row w3-container w3-hide" id="queueHeaderTemplate">
-		<div class="w3-col s2 m2 l1 w3-center"><b>#</b></div>
-		<div class="w3-col s4 m4 l4 truncate"><b>Player</b></div>
-		<div class="w3-col s3 m3 l2 truncate"><b>Queue</b></div>
+		<div class="w3-col s2 m2 l2 w3-center"><b>#</b></div>
+		<div class="w3-col s4 m5 l5 truncate"><b>Player</b></div>
+		<div class="w3-col s3 m2 l2 truncate"><b>Queue</b></div>
 		<div class="w3-col s3 m3 l3 w3-right-align truncate"><b>Waited</b></div>
 	</div>
 	<div class="w3-row w3-container w3-hide" id="queueRowTemplate">
-		<div class="w3-col s2 m2 l1 w3-border-top w3-center"></div>
-		<div class="w3-col s4 m4 l4 w3-border-top truncate"></div>
-		<div class="w3-col s3 m3 l2 w3-border-top truncate"></div>
+		<div class="w3-col s2 m2 l2 w3-border-top w3-center"></div>
+		<div class="w3-col s4 m5 l5 w3-border-top truncate"></div>
+		<div class="w3-col s3 m2 l2 w3-border-top truncate"></div>
 		<div class="w3-col s3 m3 l3 w3-border-top w3-right-align truncate"></div>
 	</div>
 

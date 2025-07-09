@@ -1,12 +1,3 @@
-class Player {
-	constructor(id, topScore) {
-		this.id = id;
-		this.topScore = topScore;
-		this.points = 0;
-		this.score = 0;
-	}
-}
-
 class QueuesManager {
 	static manager;
 
@@ -14,8 +5,8 @@ class QueuesManager {
 		if (QueuesManager.manager === undefined) {
 			QueuesManager.manager = new QueuesManager(matchPlayApiKey, ...tournamentIdList);
 		} else {
-			QueuesManager.matchPlayApiKey = matchPlayApiKey;
-			QueuesManager.tournamentIdList = tournamentIdList;
+			QueuesManager.manager.matchPlayApiKey = matchPlayApiKey;
+			QueuesManager.manager.tournamentIdList = tournamentIdList;
 		}
 	}
 
@@ -31,14 +22,8 @@ class QueuesManager {
 	}
 
 	getArenaName(arenaId) {
-		var foundArena = undefined;
-
-		Object.values(this.tournamentInfo).forEach(t => {
-			if (foundArena === undefined) {
-				foundArena = t.arenas.find((a) => a.arenaId == arenaId);
-			}
-		});
-
+		var arenaIdAsInt = Number.parseInt(arenaId);
+		var foundArena = this.mergedArenas.get(arenaIdAsInt);
 		return foundArena?.name ?? "Unknown arena - " + arenaId;
 	}
 
@@ -58,7 +43,7 @@ class QueuesManager {
 		var player = this.getPlayer(tournamentId, playerId);
 		if (player === undefined) {
 			this.loadTournamentInfoNeeded = true;
-			await this.loadTournamentInfoWithDebounce()
+			await this.loadTournamentInfoIfNeededWithDebounce()
 			player = this.getPlayer(tournamentId, playerId);
 		}
 		return player?.name ?? "Name unknown - " + playerId;
@@ -189,7 +174,6 @@ class QueuesManager {
 	}
 
 	async displayFullQueues(currentTime) {
-		var fullQueuesTitle = document.getElementById("fullQueuesTitle");
 		var nameTemplate = document.getElementById("queueNameTemplate");
 		var headerTemplate = document.getElementById("queueHeaderTemplate");
 		var rowTemplate = document.getElementById("queueRowTemplate");
@@ -212,7 +196,7 @@ class QueuesManager {
 			var queueName = nameTemplate.cloneNode(true);
 			queueName.id = queueKey + '-name';
 			queueName.classList.remove("w3-hide");
-			queueName.getElementsByTagName("h3")[0].textContent = this.getArenaName(queueKey);
+			queueName.getElementsByTagName("h4")[0].textContent = this.getArenaName(queueKey);
 			queueFlexItem.appendChild(queueName);
 
 			var queueHeader = headerTemplate.cloneNode(true);
@@ -238,7 +222,6 @@ class QueuesManager {
 			}
 		}
 		
-		//fullQueuesTitle.classList.remove("w3-hide");
 		// Add elements into the DOM
 		rowTemplate.insertAdjacentElement("afterend", this.queueDisplay);
 	}
@@ -303,7 +286,7 @@ class QueuesManager {
 		});
 	}
 
-	async loadTournamentInfoWithDebounce() {
+	async loadTournamentInfoIfNeededWithDebounce() {
 		const debounceMilliseconds = 1000 * 60; // 60 seconds
 		var skipLoad = true;
 
@@ -321,35 +304,56 @@ class QueuesManager {
 			}
 		}
 
+		// Force a load of tournament infomation if any of tournament IDs have no tournament info
+		if (skipLoad) {
+			this.tournamentIdList.forEach(tournamentId => {
+				if (tournamentId !== undefined && tournamentId > 0) {
+					if (skipLoad && !Object.hasOwn(this.tournamentInfo, tournamentId)) {
+						skipLoad = false;
+					}
+				}
+			});
+		}
+
 		if (!skipLoad) {
 			await this.loadTournamentInfo();
 		}
 	}
 
 	loadTournamentInfo() {
-		const requests = this.tournamentIdList.map(tournamentId => this.makeRequest(this.getTournamentInfoUrl(tournamentId)));
+		const requests = this.tournamentIdList.map(tournamentId => {
+			if (tournamentId !== undefined && tournamentId > 0) {
+				return this.makeRequest(this.getTournamentInfoUrl(tournamentId));
+			} else {
+				return new Promise((resolve, reject) => {
+					resolve(undefined);
+				});
+			}
+		});
 
 		return Promise.all(requests)
         .then(results => {
             console.log('Load all tournament info requests succeeded:', results);
             // Process the results from all successful requests
-			var jsonResults = results.map((r) => JSON.parse(r));
+			var jsonResults = results.map((r) => r === undefined ? undefined : JSON.parse(r));
 
 			// Clear previous tournament info
 			this.tournamentInfo = {};
 			this.mergedArenas.clear();
 
 			jsonResults.forEach(response => {
-				console.log("Load tournament info response:");
-				console.dir(response);
+				if (response !== undefined) {
+					console.log("Load tournament info response:");
+					console.dir(response);
 
-				this.tournamentInfo[response.data.tournamentId] = response.data;
+					this.tournamentInfo[response.data.tournamentId] = response.data;
 
-				response.data.arenas.forEach(arena => {
-					if (!this.mergedArenas.has(arena.arenaId)) {
-						this.mergedArenas.set(arena.arenaId, arena);
-					}
-				});
+					response.data.arenas.forEach(arena => {
+						if (!this.mergedArenas.has(arena.arenaId)) {
+							this.mergedArenas.set(arena.arenaId, arena);
+						}
+					});
+				}
 			});
 
 			this.lastLoadTournamentInfoTimestamp = new Date();
@@ -362,27 +366,37 @@ class QueuesManager {
 	}
 
 	loadAllQueues() {
-		const requests = this.tournamentIdList.map(tournamentId => this.makeRequest(this.getQueuesUrl(tournamentId)));
+		const requests = this.tournamentIdList.map(tournamentId => {
+			if (tournamentId !== undefined && tournamentId > 0) {
+				return this.makeRequest(this.getQueuesUrl(tournamentId));
+			} else {
+				return new Promise((resolve, reject) => {
+					resolve(undefined);
+				});
+			}
+		});
 
 		return Promise.all(requests)
         .then(results => {
             console.log('Load all queues requests succeeded:', results);
             // Process the results from all successful requests
-			var jsonResults = results.map((r) => JSON.parse(r));
+			var jsonResults = results.map((r) => r === undefined ? undefined : JSON.parse(r));
 
 			// Clear previous queues
 			this.queues = {};
 
 			jsonResults.forEach(response => {
-				console.log("Load queue response:");
-				console.dir(response);
+				if (response !== undefined) {
+					console.log("Load queue response:");
+					console.dir(response);
 
-				Object.keys(response.data).forEach(key => {
-					if (this.queues[key] === undefined) {
-						this.queues[key] = [];
-					}
-					this.queues[key].push(...response.data[key]);
-				});
+					Object.keys(response.data).forEach(key => {
+						if (this.queues[key] === undefined) {
+							this.queues[key] = [];
+						}
+						this.queues[key].push(...response.data[key]);
+					});
+				}
 			});
 
 			// Sort each queue by time the player joined the queue
@@ -397,43 +411,152 @@ class QueuesManager {
 	}
 }
 
-function cleanupApiKeyInput() {
-	const bearerPrefix = "bearer ";
-	const bearerPrefixLength = bearerPrefix.length
-	var apiKeyElement = document.getElementById("matchPlayApiKey");
-	var inputPrefix = apiKeyElement.value.substring(0, bearerPrefixLength);
-	if (inputPrefix.toLowerCase() === bearerPrefix) {
-		apiKeyElement.value = apiKeyElement.value.substring(bearerPrefix.length);
+class MergeQueuesSettings {
+	static settings;
+
+	static createOrUpdate() {
+		if (MergeQueuesSettings.settings === undefined) {
+			MergeQueuesSettings.settings = new MergeQueuesSettings();
+		}
+	}
+
+	static getStorageItemKey = () => "mergequeues";
+	static getMatchPlayApiKeyEl = () => document.getElementById("matchPlayApiKey");
+	static getTournamentIdAEl = () => document.getElementById("tournamentIdA");
+	static getTournamentShortNameAEl = () => document.getElementById("tournamentShortNameA");
+	static getTournamentIdBEl = () => document.getElementById("tournamentIdB");
+	static getTournamentShortNameBEl = () => document.getElementById("tournamentShortNameB");
+
+	hasRequiredMatchPlayApiKey() {
+		const keyIsBlank = (this.settingsValues.matchPlayApiKey?.trim() ?? "") === "";
+		return !keyIsBlank;
+	}
+
+	readFromStorage() {
+		const itemValue = localStorage.getItem(MergeQueuesSettings.getStorageItemKey());
+		this.settingsValues = JSON.parse(itemValue) ?? {};
+	}
+
+	writeApiKeyToStorage() {
+		const itemValue = localStorage.getItem(MergeQueuesSettings.getStorageItemKey());
+		const currentSavedSettingsValues = JSON.parse(itemValue) ?? {};
+		currentSavedSettingsValues.matchPlayApiKey = this.settingsValues.matchPlayApiKey;
+		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
+	}
+
+	clearSavedApiKeyFromStorage() {
+		const itemValue = localStorage.getItem(MergeQueuesSettings.getStorageItemKey());
+		const currentSavedSettingsValues = JSON.parse(itemValue) ?? {};
+		delete currentSavedSettingsValues.matchPlayApiKey;
+		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
+	}
+
+	writeParametersToStorage() {
+		const itemValue = localStorage.getItem(MergeQueuesSettings.getStorageItemKey());
+		const currentSavedSettingsValues = JSON.parse(itemValue) ?? {};
+		currentSavedSettingsValues.tournamentIdA = this.settingsValues.tournamentIdA;
+		currentSavedSettingsValues.tournamentShortNameA = this.settingsValues.tournamentShortNameA;
+		currentSavedSettingsValues.tournamentIdB = this.settingsValues.tournamentIdB;
+		currentSavedSettingsValues.tournamentShortNameB = this.settingsValues.tournamentShortNameB;
+		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
+	}
+
+	clearSavedParametersFromStorage() {
+		const itemValue = localStorage.getItem(MergeQueuesSettings.getStorageItemKey());
+		const currentSavedSettingsValues = JSON.parse(itemValue) ?? {};
+		delete currentSavedSettingsValues.tournamentIdA;
+		delete currentSavedSettingsValues.tournamentShortNameA;
+		delete currentSavedSettingsValues.tournamentIdB;
+		delete currentSavedSettingsValues.tournamentShortNameB;
+		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
+	}
+
+	static cleanupApiKeyInput(userInput) {
+		const bearerPrefix = "bearer ";
+		const bearerPrefixLength = bearerPrefix.length;
+		var inputPrefix = userInput.substring(0, bearerPrefixLength);
+		if (inputPrefix.toLowerCase() === bearerPrefix) {
+			userInput = userInput.substring(bearerPrefixLength);
+		}
+		return userInput;
+	}
+
+	readFromPage() {
+		this.settingsValues.matchPlayApiKey = MergeQueuesSettings.cleanupApiKeyInput(MergeQueuesSettings.getMatchPlayApiKeyEl().value);
+		this.settingsValues.tournamentIdA = parseInt(MergeQueuesSettings.getTournamentIdAEl().value);
+		this.settingsValues.tournamentShortNameA = MergeQueuesSettings.getTournamentShortNameAEl().value;
+		this.settingsValues.tournamentIdB = parseInt(MergeQueuesSettings.getTournamentIdBEl().value);
+		this.settingsValues.tournamentShortNameB = MergeQueuesSettings.getTournamentShortNameBEl().value;
+	}
+
+	writeToPage() {
+		MergeQueuesSettings.getMatchPlayApiKeyEl().value = this.settingsValues.matchPlayApiKey ?? "";
+		MergeQueuesSettings.getTournamentIdAEl().value = this.settingsValues.tournamentIdA ?? "";
+		MergeQueuesSettings.getTournamentShortNameAEl().value = this.settingsValues.tournamentShortNameA ?? "";
+		MergeQueuesSettings.getTournamentIdBEl().value = this.settingsValues.tournamentIdB ?? "";
+		MergeQueuesSettings.getTournamentShortNameBEl().value = this.settingsValues.tournamentShortNameB ?? "";
+	}
+
+	applyToQueuesManager() {
+		QueuesManager.createOrUpdate(
+			this.settingsValues.matchPlayApiKey,
+			this.settingsValues.tournamentIdA,
+			this.settingsValues.tournamentIdB);
+
+		QueuesManager.manager.shortNames = {
+			[this.settingsValues.tournamentIdA]: this.settingsValues.tournamentShortNameA,
+			[this.settingsValues.tournamentIdB]: this.settingsValues.tournamentShortNameB
+		};
+	}
+
+}
+
+function showElement(elementId) {
+	document.getElementById(elementId).classList.remove("w3-hide");
+}
+
+function hideElement(elementId) {
+	document.getElementById(elementId).classList.add("w3-hide");
+}
+
+function initializeSettings() {
+	MergeQueuesSettings.createOrUpdate();
+	MergeQueuesSettings.settings.readFromStorage();
+	MergeQueuesSettings.settings.applyToQueuesManager();
+	MergeQueuesSettings.settings.writeToPage();
+}
+
+function validateSettings() {
+	if (MergeQueuesSettings.settings.hasRequiredMatchPlayApiKey()) {
+		return true;
+	} else {
+		showElement("matchPlayKeyRequiredMessage");
+		document.getElementById("matchPlayApiKey").addEventListener(
+			'input',
+			(event) => {
+				hideElement("matchPlayKeyRequiredMessage");
+			},
+			{once: true});
+		return false;
 	}
 }
 
-function loadParameters() {
-	cleanupApiKeyInput();
-	var matchPlayApiKey = document.getElementById("matchPlayApiKey").value;
-	var tournamentIdA = parseInt(document.getElementById("tournamentIdA").value);
-	var tournamentShortNameA = document.getElementById("tournamentShortNameA").value;
-	var tournamentIdB = parseInt(document.getElementById("tournamentIdB").value);
-	var tournamentShortNameB = document.getElementById("tournamentShortNameB").value;
-
-	QueuesManager.createOrUpdate(matchPlayApiKey, tournamentIdA, tournamentIdB);
-	QueuesManager.manager.shortNames = {
-		[tournamentIdA]: tournamentShortNameA,
-		[tournamentIdB]: tournamentShortNameB
-	};
-}
-
 async function loadQueuesButton() {
-	var dataLoadTimestamp = new Date();
+	const dataLoadTimestamp = new Date();
 
-	loadParameters();
+	MergeQueuesSettings.settings.readFromPage();
+	MergeQueuesSettings.settings.applyToQueuesManager();
+	if (!validateSettings()) return;
 
-	await QueuesManager.manager.loadTournamentInfoWithDebounce();
+	await QueuesManager.manager.loadTournamentInfoIfNeededWithDebounce();
 	await QueuesManager.manager.loadAllQueues();
 	await QueuesManager.manager.displayQueues(dataLoadTimestamp);
 }
 
 async function loadPlayersButton() {
-	loadParameters();
+	MergeQueuesSettings.settings.readFromPage();
+	MergeQueuesSettings.settings.applyToQueuesManager();
+	if (!validateSettings()) return;
 	
 	await QueuesManager.manager.loadTournamentInfo()
 	await QueuesManager.manager.displayQueues();
@@ -449,49 +572,78 @@ async function autoLoadQueuesAndRepeat() {
 }
 
 async function startAutoLoadQueuesButton() {
-	loadParameters();
+	const maximumAutoLoadTime = 1000 * 60 * 60 * 11; // 11 hours
+
+	MergeQueuesSettings.settings.readFromPage();
+	MergeQueuesSettings.settings.applyToQueuesManager();
+	if (!validateSettings()) return;
 
 	QueuesManager.manager.autoLoadActive = true;
 	autoLoadQueuesAndRepeat();
 
-	document.getElementById("startAutoLoadButton").classList.add("w3-hide");
-	document.getElementById("stopAutoLoadButton").classList.remove("w3-hide");
+	QueuesManager.manager.failsafeStopAutoLoadTimeoutId = setTimeout(stopAutoLoadQueuesButton, maximumAutoLoadTime);
+
+	hideElement("startAutoLoadButton");
+	showElement("stopAutoLoadButton");
 }
 
 function stopAutoLoadQueuesButton() {
-	loadParameters();
-
 	QueuesManager.manager.autoLoadActive = false;
-	if (QueuesManager.manager.pendingAutoLoadTimeoutId !== undefined) {
-		clearTimeout(QueuesManager.pendingAutoLoadTimeoutId);
+	var activeTimeoutId = QueuesManager.manager.pendingAutoLoadTimeoutId;
+	if (activeTimeoutId !== undefined) {
+		clearTimeout(activeTimeoutId);
 		QueuesManager.manager.pendingAutoLoadTimeoutId = undefined;
 	}
 
-	document.getElementById("startAutoLoadButton").classList.remove("w3-hide");
-	document.getElementById("stopAutoLoadButton").classList.add("w3-hide");
+	var activeFailesafeTimeoutId = QueuesManager.manager.failsafeStopAutoLoadTimeoutId;
+	if (activeFailesafeTimeoutId !== undefined) {
+		clearTimeout(activeFailesafeTimeoutId);
+		QueuesManager.manager.failsafeStopAutoLoadTimeoutId = undefined;
+	}
+
+	showElement("startAutoLoadButton");
+	hideElement("stopAutoLoadButton");
 }
 
-function initializeFromStorage() {
-	const storageItemKey = "mergequeues";
-	const itemValue = localStorage.getItem(storageItemKey);
-	const item = JSON.parse(itemValue);
-	if (item?.matchPlayApiKey !== undefined) {
-		document.getElementById("matchPlayApiKey").value = item.matchPlayApiKey;
-		loadParameters();
-	}
+function flashStatusMessage(el, text) {
+	const flashTimeInMilliseconds = 1000 * 3; // 3 sec
+
+	el.textContent = text;
+	setTimeout(() => {
+		el.textContent = "";
+	}, flashTimeInMilliseconds);
 }
 
 function saveApiKey() {
-	const storageItemKey = "mergequeues";
-	loadParameters();
-	const item = {
-		matchPlayApiKey: QueuesManager.manager.matchPlayApiKey
-	};
-
-	localStorage.setItem(storageItemKey, JSON.stringify(item));
+	MergeQueuesSettings.settings.readFromPage();
+	MergeQueuesSettings.settings.writeApiKeyToStorage();
+	flashStatusMessage(document.getElementById("saveKeyStatus"), "Saved!");
 }
 
 function clearSavedApiKey() {
-	const storageItemKey = "mergequeues";
-	localStorage.removeItem(storageItemKey);
+	MergeQueuesSettings.settings.clearSavedApiKeyFromStorage();
+	flashStatusMessage(document.getElementById("saveKeyStatus"), "Cleared!");
+}
+
+function saveParameters() {
+	MergeQueuesSettings.settings.readFromPage();
+	MergeQueuesSettings.settings.writeParametersToStorage();
+	flashStatusMessage(document.getElementById("saveParametersStatus"), "Saved!");
+}
+
+function clearSavedParameters() {
+	MergeQueuesSettings.settings.clearSavedParametersFromStorage();
+	flashStatusMessage(document.getElementById("saveParametersStatus"), "Cleared!");
+}
+
+function showParameters() {
+	showElement("parametersSection");
+	hideElement("showParametersButton");
+	showElement("hideParametersButton");
+}
+
+function hideParameters() {
+	hideElement("parametersSection");
+	showElement("showParametersButton");
+	hideElement("hideParametersButton");
 }
