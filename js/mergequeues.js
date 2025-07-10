@@ -185,12 +185,17 @@ class QueuesManager {
 
 		// Hold new elements outside of the DOM until they are ready to display
 		this.queueDisplay = document.createElement("div");
-		this.queueDisplay.classList.add("w3-flex");
-		this.queueDisplay.classList.add("queue-list-flex");
+		// this.queueDisplay.classList.add("w3-flex");
+		// this.queueDisplay.classList.add("queue-list-flex");
+		this.queueDisplay.classList.add("w3-grid");
+		this.queueDisplay.classList.add("queue-list-grid-3");
 
 		for (const [queueKey, queueItem] of Object.entries(this.queues)) {
 			var queueFlexItem = document.createElement("div");
-			queueFlexItem.classList.add("queue-flex");
+			// queueFlexItem.classList.add("queue-flex");
+			queueFlexItem.classList.add("rounded-box");
+			queueFlexItem.classList.add("w3-border-blue");
+			queueFlexItem.classList.add("w3-card");
 			this.queueDisplay.appendChild(queueFlexItem);
 
 			var queueName = nameTemplate.cloneNode(true);
@@ -271,9 +276,18 @@ class QueuesManager {
 			xhr.setRequestHeader("Authorization", "Bearer " + this.matchPlayApiKey);
 
 			xhr.onload = () => {
-				if (xhr.status >= 200 && xhr.status < 300) {
+				if (xhr.status == 200) {
 					resolve(xhr.responseText);
 				} else {
+					if (xhr.status == 401 || xhr.status == 403) {
+						// Token has been deleted, clear it from local storage and the UI
+						// and ask the user to enter a new token
+						handleDeletedApiKey();
+					} else if (xhr.status == 429) {
+						// Request has been rate limited, pause requests for 1 minute
+						// alert the user that they should not share tokens across devices
+						handleRateLimitedRequest();
+					}
 					reject(new Error(`Request failed with status ${xhr.status}`));
 				}
 			};
@@ -471,6 +485,10 @@ class MergeQueuesSettings {
 		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
 	}
 
+	clearApiKeyFromPage() {
+		MergeQueuesSettings.getMatchPlayApiKeyEl().value = "";
+	}
+
 	static cleanupApiKeyInput(userInput) {
 		const bearerPrefix = "bearer ";
 		const bearerPrefixLength = bearerPrefix.length;
@@ -519,11 +537,50 @@ function hideElement(elementId) {
 	document.getElementById(elementId).classList.add("w3-hide");
 }
 
+function disableButton(elementId) {
+	document.getElementById(elementId).classList.add("w3-disable");
+}
+
+function enableButton(elementId) {
+	document.getElementById(elementId).classList.remove("w3-disable");
+}
+
 function initializeSettings() {
 	MergeQueuesSettings.createOrUpdate();
 	MergeQueuesSettings.settings.readFromStorage();
 	MergeQueuesSettings.settings.applyToQueuesManager();
 	MergeQueuesSettings.settings.writeToPage();
+}
+
+function handleDeletedApiKey() {
+	MergeQueuesSettings.settings.clearApiKeyFromPage();
+	clearSavedApiKey();
+	showElement("matchPlayKeyInvalidMessage");
+	document.getElementById("matchPlayApiKey").addEventListener(
+		'input',
+		(event) => {
+			hideElement("matchPlayKeyInvalidMessage");
+		},
+		{once: true});
+	return false;
+}
+
+function handleRateLimitedRequest() {
+	const rateLimitTimeoutWaitingPeriod = 1000 * 60; // 1 minute
+	stopAutoLoadQueuesButton();
+	disableButton("loadQueuesButton");
+	disableButton("loadPlayersButton");
+	disableButton("startAutoLoadButton");
+	showElement("rateLimitedRequestMessage");
+
+	QueuesManager.manager.waitingForRateLimitTimeout = true;
+	setTimeout(() => {
+		enableButton("loadQueuesButton");
+		enableButton("loadPlayersButton");
+		enableButton("startAutoLoadButton");
+		hideElement("rateLimitedRequestMessage");
+		QueuesManager.manager.waitingForRateLimitTimeout = false;
+	}, rateLimitTimeoutWaitingPeriod);
 }
 
 function validateSettings() {
