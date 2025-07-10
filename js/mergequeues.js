@@ -1,3 +1,24 @@
+/**
+ * ## Testing with canned responses
+ * 
+ * Run the following commands from the console to caputre responses:
+ * 
+ * QueuesManager.manager.captureCannedResponses = true;
+ * loadQueuesButton();
+ * JSON.stringify(QueuesManager.manager.cannedResponses);
+ * 
+ * Copy the resulting output and save it to a local file.
+ * 
+ * Later you an use those responses for local testing using these commands:
+ * 
+ * QueuesManager.manager.useCannedResponses = true;
+ * QueuesManager.manager.cannedResponses = JSON.parse(`text copied from captured responses`);
+ * loadQueuesButton();
+ * 
+ */
+
+const nbspEntity = "\u00A0";
+
 class QueuesManager {
 	static manager;
 
@@ -15,40 +36,21 @@ class QueuesManager {
 		this.tournamentIdList = tournamentIdList;
 		this.queues = {};
 		this.tournamentInfo = {};
+		this.arenaSummary = [];
 		this.mergedArenas = new Map();
 		this.queueDisplay = undefined;
 		this.lastLoadTournamentInfoTimestamp = undefined;
+		this.lastLoadTournamentInfoAttemptTimestamp = undefined;
 		this.loadTournamentInfoNeeded = true;
+		this.usePrefixForSummaryPlayerNames = true;
 		this.arenaOrder = "";
-	}
-
-	sortKeysByArenaOrder(arenaKeys) {
-		// Sort the queues by the provided arena order
-		const arenaOrderList = this.arenaOrder.split(",").map(s => s.trim()).filter(s => s !== "");
-		if (arenaOrderList.length > 0) {
-			arenaKeys.sort((arenaIdA, arenaIdB) => {
-				var indexOfA = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdA).startsWith(arenaPrefix));
-				var indexOfB = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdB).startsWith(arenaPrefix));
-				if (indexOfA === -1 && indexOfB === -1) return 0;
-				if (indexOfA === -1) return 1;
-				if (indexOfB === -1) return -1;
-				if (indexOfA > indexOfB) return 1;
-				if (indexOfA < indexOfB) return -1;
-				return 0;
-			});
-		}
-	}
-
-	getArenaName(arenaId) {
-		var arenaIdAsInt = Number.parseInt(arenaId);
-		var foundArena = this.mergedArenas.get(arenaIdAsInt);
-		return foundArena?.name ?? "Unknown arena - " + arenaId;
+		this.cannedResponses = {};
 	}
 
 	getQueueName(tournamentId) {
-		var name = this.shortNames[tournamentId] || this.tournamentInfo[tournamentId].name;
+		let name = this.shortNames[tournamentId] || this.tournamentInfo[tournamentId].name;
   		if (name.trim() === "") {
-			name = "\u00A0"; // &nbsp;
+			name = nbspEntity;
   		}
 		return name;
 	}
@@ -58,23 +60,29 @@ class QueuesManager {
 	}
 
 	async getPlayerName(tournamentId, playerId) {
-		var player = this.getPlayer(tournamentId, playerId);
+		let player = this.getPlayer(tournamentId, playerId);
 		if (player === undefined) {
 			this.loadTournamentInfoNeeded = true;
 			await this.loadTournamentInfoIfNeededWithDebounce()
+			// Try again in case that load worked
 			player = this.getPlayer(tournamentId, playerId);
 		}
 		return player?.name ?? "Name unknown - " + playerId;
 	}
 
 	async buildSummaryPlayerName(playerInfo) {
-		var playerName = await this.getPlayerName(playerInfo.tournamentId, playerInfo.playerId);
-		var prefix = this.getQueueName(playerInfo.tournamentId).substring(0, 1);
-		if (prefix?.trim() === "") {
-			prefix = "";
-		} else {
-			prefix += " - ";
+		const playerName = await this.getPlayerName(playerInfo.tournamentId, playerInfo.playerId);
+
+		let prefix = "";
+		if (this.usePrefixForSummaryPlayerNames) {
+			prefix = this.getQueueName(playerInfo.tournamentId).substring(0, 1);
+			if (prefix?.trim() === "") {
+				prefix = "";
+			} else {
+				prefix += " - ";
+			}
 		}
+
 		return prefix + playerName;
 	}
 
@@ -84,11 +92,11 @@ class QueuesManager {
 		const morethan2MinutesSuffix = " minutes";
 		const morethan999Minutes = "forever";
 
-		var past = Date.parse(pastTime);
-		var differenceinMs = currentTime - past;
+		const past = Date.parse(pastTime);
+		const differenceinMs = currentTime - past;
 
-		var seconds = Math.floor(differenceinMs / 1000);
-		var minutes = Math.floor(seconds / 60);
+		const seconds = Math.floor(differenceinMs / 1000);
+		const minutes = Math.floor(seconds / 60);
 
 		if (minutes < 1) {
 			return lessthan1Minute;
@@ -102,89 +110,106 @@ class QueuesManager {
 	}
 
 	buildLastUpdatedText(dataLoadTimestamp) {
-		var hoursInt = dataLoadTimestamp.getHours()
-		var timeSuffix;
-		var hours;
-		if (hoursInt === 0) {
+		const midnightHours = 0;
+		const noonHours = 12;
+
+		const hoursInt = dataLoadTimestamp.getHours()
+		let timeSuffix;
+		let hours;
+		if (hoursInt === midnightHours) {
 			timeSuffix = "am";
 			hours = "12";
-		} else if (hoursInt < 12) {
+		} else if (hoursInt < noonHours) {
 			timeSuffix = "am"
 			hours = String(hoursInt);
-		} else if (hoursInt === 12) {
+		} else if (hoursInt === noonHours) {
 			timeSuffix = "pm"
 			hours = "12";
 		} else {
 			timeSuffix = "pm";
 			hours = String(hoursInt - 12);
 		}
-  		var minutes = String(dataLoadTimestamp.getMinutes()).padStart(2, '0');
-  		var seconds = String(dataLoadTimestamp.getSeconds()).padStart(2, '0');
-		var lastUpdatedText = `${hours}:${minutes}:${seconds} ${timeSuffix}`;
+		// Two-digits for minutes part and seconds part
+  		const minutes = String(dataLoadTimestamp.getMinutes()).padStart(2, '0');
+  		const seconds = String(dataLoadTimestamp.getSeconds()).padStart(2, '0');
+		const lastUpdatedText = `${hours}:${minutes}:${seconds} ${timeSuffix}`;
 		return lastUpdatedText;
 	}
 
 	async displayQueuesSummary(currentTime) {
-		var queueSummaryTitle = document.getElementById("queueSummaryTitle");
-		var queueSummaryHeader = document.getElementById("queueSummaryHeader");
-		var rowTemplate = document.getElementById("queueSummaryRowTemplate");
-
 		if (this.queueSummaryDisplay !== undefined) {
 			// Cleanup old elements
 			this.queueSummaryDisplay.remove();
 		}
 
+		const queueSummaryTitle = document.getElementById("queueSummaryTitle");
+		const queueSummaryHeader = document.getElementById("queueSummaryHeader");
+
+		// Bail early if this content should not be displayed
+		if (!this.displaySummary) {
+			queueSummaryTitle.classList.add("w3-hide");
+			queueSummaryHeader.classList.add("w3-hide");
+			return;
+		}
+
+		const rowTemplate = document.getElementById("queueSummaryRowTemplate");
+
 		// Hold new elements outside of the DOM until they are ready to display
 		this.queueSummaryDisplay = document.createElement("div");
 
-		var arenaKeys = Array.from(this.mergedArenas.keys());
-		this.sortKeysByArenaOrder(arenaKeys);
+		let rowIndex = 0;
+		for (const arenaInfo of this.arenaSummary) {
+			const queueItem = this.queues[arenaInfo.arenaId];
+			const playerOne = queueItem?.[0];
+			const playerTwo = queueItem?.[1];
+			const playerThree = queueItem?.[2];
+			const queueIsEmpty = (undefined === (playerOne ?? playerTwo ?? playerThree));
 
+			// Skip queues that are inactive unless they still have queued players
+			if (arenaInfo.arenaActiveForAll || !queueIsEmpty) {
+				const queueSummaryRow = rowTemplate.cloneNode(true);
+				queueSummaryRow.id = 'summaryrow-' + arenaInfo.arenaId;
+				queueSummaryRow.classList.remove("w3-hide");
 
-		var queueCount = arenaKeys.length;
-		var queueKey = undefined;
-		var queueItem = undefined;
+				const queueRowCols = queueSummaryRow.getElementsByTagName("div");
+				queueRowCols[0].textContent = arenaInfo.name;
+				if (queueIsEmpty) {
+					let playerOneMessage;
+					if (arenaInfo.bestGameBlockedForAny) {
+						playerOneMessage = "Blocked for repair";
+					} else if (arenaInfo.bestGameQueueClosedForAll) {
+						playerOneMessage = "Queue is closed";
+					} else {
+						playerOneMessage = "Queue is empty";
+					}
+					queueRowCols[1].textContent = playerOneMessage;	
+				} else {
+					queueRowCols[1].textContent = await this.buildSummaryPlayerName(playerOne);
+				}
+				
+				if (playerTwo === undefined) {
+					queueRowCols[2].textContent = nbspEntity;
+				} else {
+					queueRowCols[2].textContent = await this.buildSummaryPlayerName(playerTwo);
+				}
 
-		for (let i = 0; i < queueCount; i++) {
-			var queueSummaryRow = rowTemplate.cloneNode(true);
-			queueSummaryRow.id = 'summaryrow-' + i;
-			queueSummaryRow.classList.remove("w3-hide");
+				if (playerThree === undefined) {
+					queueRowCols[3].textContent = nbspEntity;
+				} else {
+					queueRowCols[3].textContent = await this.buildSummaryPlayerName(playerThree);
+				}
 
-			queueKey = arenaKeys[i];
-			queueItem = this.queues[queueKey];
+				// Row styling
+				if (rowIndex > 0) {
+					Object.keys(queueRowCols).forEach(k => queueRowCols[k].classList.remove("w3-border-top"));
+				}
+				if (rowIndex % 2 === 1) {
+					Object.keys(queueRowCols).forEach(k => queueRowCols[k].classList.add("w3-pale-green"));
+				}
+				rowIndex++;
 
-			var playerOne = queueItem?.[0];
-			var playerTwo = queueItem?.[1];
-			var playerThree = queueItem?.[2];
-			var queueIsEmpty = (undefined === (playerOne ?? playerTwo ?? playerThree));
-
-			var queueRowCols = queueSummaryRow.getElementsByTagName("div");
-			queueRowCols[0].textContent = this.getArenaName(queueKey);
-			if (queueIsEmpty) {
-				queueRowCols[1].textContent = "Queue is empty";
-			} else {
-				queueRowCols[1].textContent = await this.buildSummaryPlayerName(playerOne);
+				this.queueSummaryDisplay.appendChild(queueSummaryRow);
 			}
-			if (playerTwo === undefined) {
-				queueRowCols[2].textContent = "\u00A0"; // &nbsp;
-			} else {
-				queueRowCols[2].textContent = await this.buildSummaryPlayerName(playerTwo);
-			}
-			if (playerThree === undefined) {
-				queueRowCols[3].textContent = "\u00A0"; // &nbsp;
-			} else {
-				queueRowCols[3].textContent = await this.buildSummaryPlayerName(playerThree);
-			}
-
-			if (i > 0) {
-				Object.keys(queueRowCols).forEach(k => queueRowCols[k].classList.remove("w3-border-top"));
-			}
-
-			if (i % 2 === 1) {
-				Object.keys(queueRowCols).forEach(k => queueRowCols[k].classList.add("w3-pale-green"));
-			}
-
-			this.queueSummaryDisplay.appendChild(queueSummaryRow);
 		}
 
 		queueSummaryTitle.classList.remove("w3-hide");
@@ -195,76 +220,165 @@ class QueuesManager {
 	}
 
 	async displayFullQueues(currentTime) {
-		var nameTemplate = document.getElementById("queueNameTemplate");
-		var headerTemplate = document.getElementById("queueHeaderTemplate");
-		var rowTemplate = document.getElementById("queueRowTemplate");
-
 		if (this.queueDisplay !== undefined) {
 			// Cleanup old elements
 			this.queueDisplay.remove();
 		}
+
+		// Bail early if this content should not be displayed
+		if (!this.displayDetails) {
+			return;
+		}
+
+		const nameTemplate = document.getElementById("queueNameTemplate");
+		const headerTemplate = document.getElementById("queueHeaderTemplate");
+		const rowTemplate = document.getElementById("queueRowTemplate");
+
+		// Arena arena status message templates
+		const blockedQueueRow = {
+			rowPrefix: "⚠",
+			mainLabel: "Blocked for repair",
+			queueName: nbspEntity,
+			waitingTime: nbspEntity
+		};
+		const emptyQueueRow = {
+			rowPrefix: nbspEntity,
+			mainLabel: "Queue is empty",
+			queueName: nbspEntity,
+			waitingTime: nbspEntity
+		};
+		const closedQueueRow = {
+			rowPrefix: nbspEntity,
+			mainLabel: "Queue is closed",
+			queueName: nbspEntity,
+			waitingTime: nbspEntity
+		};
 
 		// Hold new elements outside of the DOM until they are ready to display
 		this.queueDisplay = document.createElement("div");
 		this.queueDisplay.classList.add("w3-grid");
 		this.queueDisplay.classList.add("queue-list-grid-3");
 
-		var arenaKeys = Object.keys(this.queues);
-		this.sortKeysByArenaOrder(arenaKeys);
-
-		for (const queueKey of arenaKeys) {
-			const queueItem = this.queues[queueKey];
-			var queueFlexItem = document.createElement("div");
-			queueFlexItem.classList.add("rounded-box");
-			queueFlexItem.classList.add("w3-border-blue");
-			queueFlexItem.classList.add("w3-card");
-			this.queueDisplay.appendChild(queueFlexItem);
-
-			var queueName = nameTemplate.cloneNode(true);
-			queueName.id = queueKey + '-name';
-			queueName.classList.remove("w3-hide");
-			queueName.getElementsByTagName("h4")[0].textContent = this.getArenaName(queueKey);
-			queueFlexItem.appendChild(queueName);
-
-			var queueHeader = headerTemplate.cloneNode(true);
-			queueHeader.id = queueKey + '-header';
-			queueHeader.classList.remove("w3-hide");
-			queueFlexItem.appendChild(queueHeader);
-
-			var isTopRow = true;
-			for (const [playerIndex, queuedPlayer] of Object.entries(queueItem)) {
-				var queueRow = rowTemplate.cloneNode(true);
-				queueRow.id = queueItem.arenaId + "-" + playerIndex;
-				queueRow.classList.remove("w3-hide");
-				var queueRowCols = queueRow.getElementsByTagName("div");
-				queueRowCols[0].textContent = parseInt(playerIndex) + 1;
-				queueRowCols[1].textContent = await this.getPlayerName(queuedPlayer.tournamentId, queuedPlayer.playerId);
-				queueRowCols[2].textContent = this.getQueueName(queuedPlayer.tournamentId);
-				queueRowCols[3].textContent = this.timeSinceToText(currentTime, queuedPlayer.createdAt);
-				if (!isTopRow) {
-					Object.keys(queueRowCols).forEach(k => queueRowCols[k].classList.remove("w3-border-top"));
+		for (const arenaKey of Object.keys(this.queues)) {
+			const arenaId = parseInt(arenaKey);
+			if (!this.arenaSummary.find(arenaInfo => arenaInfo.arenaId === arenaId)) {
+				this.loadTournamentInfoNeeded = true;
+				await this.loadTournamentInfoIfNeededWithDebounce()
+				// Try again in case that load worked
+				if (!this.arenaSummary.find(arenaInfo => arenaInfo.arenaId === arenaId)) {
+					this.arenaSummary.push({
+						arenaId: arenaId,
+						name: "Unknown arena - " + arenaId,
+						arenaActiveForAll: true,
+						bestGameBlockedForAny: false,
+						bestGameQueueClosedForAll: false
+					});
 				}
-				queueFlexItem.appendChild(queueRow);
-				isTopRow = false;
 			}
 		}
-		
-		// Add elements into the DOM
-		rowTemplate.insertAdjacentElement("afterend", this.queueDisplay);
+
+		for (const arenaInfo of this.arenaSummary) {
+			const queueItem = this.queues[arenaInfo.arenaId];
+			const queueIsEmpty = queueItem === undefined;
+
+			// Skip queues that are inactive unless they still have queued players
+			if (arenaInfo.arenaActiveForAll || !queueIsEmpty) {
+				const queueFlexItem = document.createElement("div");
+				queueFlexItem.classList.add("rounded-box");
+				queueFlexItem.classList.add("w3-border-blue");
+				queueFlexItem.classList.add("w3-card");
+				this.queueDisplay.appendChild(queueFlexItem);
+
+				const queueName = nameTemplate.cloneNode(true);
+				queueName.id = arenaInfo.arenaId + '-name';
+				queueName.classList.remove("w3-hide");
+				queueName.getElementsByTagName("h4")[0].textContent = arenaInfo.name;
+				queueFlexItem.appendChild(queueName);
+
+				const queueHeader = headerTemplate.cloneNode(true);
+				queueHeader.id = arenaInfo.arenaId + '-header';
+				queueHeader.classList.remove("w3-hide");
+				queueFlexItem.appendChild(queueHeader);
+
+				// Augment queued players with arena status messages
+				let queueEntries = [];
+				if (queueItem === undefined) {
+					// Queue is empty
+					if (arenaInfo.bestGameBlockedForAny) {
+						queueEntries.push(blockedQueueRow);
+					} else if (arenaInfo.bestGameQueueClosedForAll) {
+						queueEntries.push(closedQueueRow);
+					} else {
+						queueEntries.push(emptyQueueRow);
+					}
+				} else {
+					if (arenaInfo.bestGameBlockedForAny) {
+						queueEntries.push(blockedQueueRow);
+					}
+
+					for (const [rowPrefix, queuedPlayer] of Object.entries(queueItem)) {
+						const rowNumber = parseInt(rowPrefix) + 1; // Account for 0-based indexing
+						const playerName = await this.getPlayerName(queuedPlayer.tournamentId, queuedPlayer.playerId);
+						const queueName = this.getQueueName(queuedPlayer.tournamentId);
+						const waitingTime = this.timeSinceToText(currentTime, queuedPlayer.createdAt);
+						queueEntries.push({
+							rowPrefix: rowNumber,
+							mainLabel: playerName,
+							queueName: queueName,
+							waitingTime: waitingTime
+						});
+					}
+
+					if (arenaInfo.bestGameQueueClosedForAll) {
+						queueEntries.push(closedQueueRow);
+					}
+				}
+
+				let rowIndex = 0;
+				for (const queueEntry of queueEntries) {
+					const queueRow = rowTemplate.cloneNode(true);
+					queueRow.id = arenaInfo.arenaId + "-" + rowIndex;
+					queueRow.classList.remove("w3-hide");
+					const queueRowCols = queueRow.getElementsByTagName("div");
+					queueRowCols[0].textContent = queueEntry.rowPrefix; 
+					queueRowCols[1].textContent = queueEntry.mainLabel;
+					queueRowCols[2].textContent = queueEntry.queueName;
+					queueRowCols[3].textContent = queueEntry.waitingTime;
+
+					// Hide top border after the first row
+					if (rowIndex > 0) {
+						Object.keys(queueRowCols).forEach(k => queueRowCols[k].classList.remove("w3-border-top"));
+					}
+					rowIndex++;
+
+					queueFlexItem.appendChild(queueRow);
+				}
+				
+				// Add elements into the DOM
+				rowTemplate.insertAdjacentElement("afterend", this.queueDisplay);
+			}
+		}
 	}
 
 	async displayQueues(dataLoadTimestamp) {
 		console.log("Queues to display:");
 		console.dir(this.queues);
 
-		const currentTime = new Date();
+		let displayTimestamp = new Date();
+		// When using canned responses, use canned dates too
+		if (QueuesManager.manager.useCannedResponses) {
+			displayTimestamp = new Date(QueuesManager.manager.cannedResponses.displayTimestamp);
+		}
+		if (QueuesManager.manager.captureCannedResponses) {
+			QueuesManager.manager.cannedResponses.displayTimestamp = displayTimestamp;
+		}
 
 		await this.displayQueuesSummary();
-		await this.displayFullQueues(currentTime);
+		await this.displayFullQueues(displayTimestamp);
 
 		if (dataLoadTimestamp instanceof Date) {
-			var lastUpdatedText = this.buildLastUpdatedText(dataLoadTimestamp);
-			var lastUpdated = document.getElementById("lastUpdated");
+			const lastUpdatedText = this.buildLastUpdatedText(dataLoadTimestamp);
+			const lastUpdated = document.getElementById("lastUpdated");
 			lastUpdated.classList.remove("w3-hide");
 			lastUpdated.textContent = "Last updated " + lastUpdatedText;
 		}
@@ -281,7 +395,7 @@ class QueuesManager {
 	}
 
 	getTournamentInfoUrl(tournamentId) {
-		var url = new URL("https://app.matchplay.events/api/tournaments/" + tournamentId);
+		const url = new URL("https://app.matchplay.events/api/tournaments/" + tournamentId);
 		url.searchParams.append("includePlayers", 1);
 		url.searchParams.append("includeArenas", 1);
 		return url;
@@ -292,6 +406,10 @@ class QueuesManager {
 	}
 
 	makeRequest(url) {
+		if (this.useCannedResponses) {
+			return new Promise(resolve => resolve(this.cannedResponses[url]));
+		}
+
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			xhr.open('GET', url);
@@ -299,6 +417,9 @@ class QueuesManager {
 
 			xhr.onload = () => {
 				if (xhr.status == 200) {
+					if (this.captureCannedResponses) {
+						this.cannedResponses[url] = xhr.responseText;
+					}
 					resolve(xhr.responseText);
 				} else {
 					if (xhr.status == 401 || xhr.status == 403) {
@@ -324,15 +445,20 @@ class QueuesManager {
 
 	async loadTournamentInfoIfNeededWithDebounce() {
 		const debounceMilliseconds = 1000 * 60; // 60 seconds
-		var skipLoad = true;
+		const limitMilliseconds = 1000 * 10; // 10 seconds
+		const currentTime = new Date();
+		let skipLoad = true;
 
 		if (this.loadTournamentInfoNeeded) {
-			if (this.lastLoadTournamentInfoTimestamp === undefined) {
+			if (this.lastLoadTournamentInfoAttemptTimestamp === undefined) {
 				skipLoad = false;
 			} else {
-				var timeSinceLastRefresh = (new Date() - this.lastLoadTournamentInfoTimestamp);
+				const timeSinceLastRefresh = (currentTime - this.lastLoadTournamentInfoTimestamp);
+				const timeSinceLastAttempt = (currentTime - this.lastLoadTournamentInfoAttemptTimestamp);
 				if (timeSinceLastRefresh < debounceMilliseconds) {
 					console.log(`Skipping tournament load request, last refresh was ${timeSinceLastRefresh} ms ago`);
+				} else if (timeSinceLastAttempt < limitMilliseconds) {
+					console.log(`Skipping tournament load request, last refresh attempt was ${timeSinceLastRefresh} ms ago`);
 				} else {
 					console.log(`Loading tournament info after debounce of ${timeSinceLastRefresh} ms`);
 					skipLoad = false;
@@ -371,12 +497,13 @@ class QueuesManager {
         .then(results => {
             console.log('Load all tournament info requests succeeded:', results);
             // Process the results from all successful requests
-			var jsonResults = results.map((r) => r === undefined ? undefined : JSON.parse(r));
+			const jsonResults = results.map((r) => r === undefined ? undefined : JSON.parse(r));
 
 			// Clear previous tournament info
 			this.tournamentInfo = {};
 			this.mergedArenas.clear();
 
+			this.lastLoadTournamentInfoAttemptTimestamp = new Date();
 			jsonResults.forEach(response => {
 				if (response !== undefined) {
 					console.log("Load tournament info response:");
@@ -385,12 +512,58 @@ class QueuesManager {
 					this.tournamentInfo[response.data.tournamentId] = response.data;
 
 					response.data.arenas.forEach(arena => {
-						if (!this.mergedArenas.has(arena.arenaId)) {
-							this.mergedArenas.set(arena.arenaId, arena);
+						if (this.mergedArenas.has(arena.arenaId)) {
+							this.mergedArenas.get(arena.arenaId).push(arena);
+						} else {
+							this.mergedArenas.set(arena.arenaId, [arena]);
 						}
 					});
 				}
 			});
+
+			// Clear previous tournament rollup
+			this.arenaSummary = [];
+			for (let [arenaId, mappedArenas] of this.mergedArenas) {
+				let name = undefined;
+				let arenaActiveForAll = false;
+				let bestGameBlockedForAny = false;
+				let bestGameQueueClosedForAll = true;
+
+				mappedArenas.forEach(arenaInfo => {
+					if (name === undefined) {
+						name = arenaInfo.name;
+					}
+					arenaActiveForAll = arenaActiveForAll || arenaInfo.tournamentArena.status === "active";
+					bestGameBlockedForAny = bestGameBlockedForAny || arenaInfo.tournamentArena.bestGameBlocked;
+					bestGameQueueClosedForAll = bestGameQueueClosedForAll && arenaInfo.tournamentArena.bestGameQueueClosed;
+				});
+
+				this.arenaSummary.push({
+					arenaId: arenaId,
+					name: name,
+					arenaActiveForAll: arenaActiveForAll,
+					bestGameBlockedForAny: bestGameBlockedForAny,
+					bestGameQueueClosedForAll: bestGameQueueClosedForAll
+				});
+			}
+
+			// Sort the queues by the provided arena order
+			const arenaOrderList = this.arenaOrder.split(",").map(s => s.trim()).filter(s => s !== "");
+			if (arenaOrderList.length > 0) {
+				this.arenaSummary.sort((a, b) => {
+					const sortAFirst = -1;
+					const orderUnchanged = 0;
+					const sortBFirst = 1;
+					const indexOfA = arenaOrderList.findIndex(arenaPrefix => a.name.startsWith(arenaPrefix));
+					const indexOfB = arenaOrderList.findIndex(arenaPrefix => b.name.startsWith(arenaPrefix));
+					if (indexOfA === -1 && indexOfB === -1) return orderUnchanged; // Neither found
+					if (indexOfA === -1) return sortBFirst; // Only B found
+					if (indexOfB === -1) return sortAFirst; // Only A found
+					if (indexOfA > indexOfB) return sortBFirst; // A came later in the order list
+					if (indexOfA < indexOfB) return sortAFirst; // B came later in the order list
+					return orderUnchanged; // Matched the same item in the order list
+				});
+			}
 
 			this.lastLoadTournamentInfoTimestamp = new Date();
 			this.loadTournamentInfoNeeded = false;
@@ -416,7 +589,7 @@ class QueuesManager {
         .then(results => {
             console.log('Load all queues requests succeeded:', results);
             // Process the results from all successful requests
-			var jsonResults = results.map((r) => r === undefined ? undefined : JSON.parse(r));
+			const jsonResults = results.map((r) => r === undefined ? undefined : JSON.parse(r));
 
 			// Clear previous queues
 			this.queues = {};
@@ -463,6 +636,10 @@ class MergeQueuesSettings {
 	static getTournamentIdBEl = () => document.getElementById("tournamentIdB");
 	static getTournamentShortNameBEl = () => document.getElementById("tournamentShortNameB");
 	static getArenaOrderEl = () => document.getElementById("arenaOrder");
+	static getUsePrefixForSummaryPlayerNamesEl = () => document.getElementById("usePrefixForSummaryPlayerNames");
+	static getSectionsToDislayDetailsEl = () => document.getElementById("sectionsToDisplay-details");
+	static getSectionsToDislaySummaryEl = () => document.getElementById("sectionsToDisplay-summary");
+	static getSectionsToDislayBothEl = () => document.getElementById("sectionsToDisplay-both");
 
 	hasRequiredMatchPlayApiKey() {
 		const keyIsBlank = (this.settingsValues.matchPlayApiKey?.trim() ?? "") === "";
@@ -496,6 +673,9 @@ class MergeQueuesSettings {
 		currentSavedSettingsValues.tournamentIdB = this.settingsValues.tournamentIdB;
 		currentSavedSettingsValues.tournamentShortNameB = this.settingsValues.tournamentShortNameB;
 		currentSavedSettingsValues.arenaOrder = this.settingsValues.arenaOrder;
+		currentSavedSettingsValues.usePrefixForSummaryPlayerNames = this.settingsValues.usePrefixForSummaryPlayerNames;
+		currentSavedSettingsValues.displayDetails = this.settingsValues.displayDetails;
+		currentSavedSettingsValues.displaySummary = this.settingsValues.displaySummary;
 		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
 	}
 
@@ -507,6 +687,9 @@ class MergeQueuesSettings {
 		delete currentSavedSettingsValues.tournamentIdB;
 		delete currentSavedSettingsValues.tournamentShortNameB;
 		delete currentSavedSettingsValues.arenaOrder;
+		delete currentSavedSettingsValues.usePrefixForSummaryPlayerNames;
+		delete currentSavedSettingsValues.displayDetails;
+		delete currentSavedSettingsValues.displaySummary;
 		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
 	}
 
@@ -517,7 +700,7 @@ class MergeQueuesSettings {
 	static cleanupApiKeyInput(userInput) {
 		const bearerPrefix = "bearer ";
 		const bearerPrefixLength = bearerPrefix.length;
-		var inputPrefix = userInput.substring(0, bearerPrefixLength);
+		const inputPrefix = userInput.substring(0, bearerPrefixLength);
 		if (inputPrefix.toLowerCase() === bearerPrefix) {
 			userInput = userInput.substring(bearerPrefixLength);
 		}
@@ -531,6 +714,10 @@ class MergeQueuesSettings {
 		this.settingsValues.tournamentIdB = parseInt(MergeQueuesSettings.getTournamentIdBEl().value);
 		this.settingsValues.tournamentShortNameB = MergeQueuesSettings.getTournamentShortNameBEl().value;
 		this.settingsValues.arenaOrder = MergeQueuesSettings.getArenaOrderEl().value;
+		this.settingsValues.usePrefixForSummaryPlayerNames = MergeQueuesSettings.getUsePrefixForSummaryPlayerNamesEl().checked;
+		const displayBothChecked = MergeQueuesSettings.getSectionsToDislayBothEl().checked;
+		this.settingsValues.displayDetails = displayBothChecked || MergeQueuesSettings.getSectionsToDislayDetailsEl().checked;
+		this.settingsValues.displaySummary = displayBothChecked || MergeQueuesSettings.getSectionsToDislaySummaryEl().checked;
 	}
 
 	writeToPage() {
@@ -540,6 +727,16 @@ class MergeQueuesSettings {
 		MergeQueuesSettings.getTournamentIdBEl().value = this.settingsValues.tournamentIdB ?? "";
 		MergeQueuesSettings.getTournamentShortNameBEl().value = this.settingsValues.tournamentShortNameB ?? "";
 		MergeQueuesSettings.getArenaOrderEl().value = this.settingsValues.arenaOrder ?? "";
+		if (this.settingsValues.usePrefixForSummaryPlayerNames !== undefined) {
+			MergeQueuesSettings.getUsePrefixForSummaryPlayerNamesEl().checked = this.settingsValues.usePrefixForSummaryPlayerNames;
+		}
+		if (this.settingsValues.displayDetails && this.settingsValues.displaySummary) {
+			MergeQueuesSettings.getSectionsToDislayBothEl().checked = true;
+		} else if (this.settingsValues.displayDetails) {
+			MergeQueuesSettings.getSectionsToDislayDetailsEl().checked = true;
+		} else if (this.settingsValues.displaySummary) {
+			MergeQueuesSettings.getSectionsToDislaySummaryEl().checked = true;
+		}
 	}
 
 	applyToQueuesManager() {
@@ -554,6 +751,9 @@ class MergeQueuesSettings {
 		};
 
 		QueuesManager.manager.arenaOrder = this.settingsValues.arenaOrder;
+		QueuesManager.manager.usePrefixForSummaryPlayerNames = this.settingsValues.usePrefixForSummaryPlayerNames;
+		QueuesManager.manager.displayDetails = this.settingsValues.displayDetails;
+		QueuesManager.manager.displaySummary = this.settingsValues.displaySummary;
 	}
 
 }
@@ -628,7 +828,15 @@ function validateSettings() {
 }
 
 async function loadQueuesButton() {
-	const dataLoadTimestamp = new Date();
+	let dataLoadTimestamp = new Date();
+
+	// When using canned responses, use canned dates too
+	if (QueuesManager.manager.useCannedResponses) {
+		dataLoadTimestamp = new Date(QueuesManager.manager.cannedResponses.dataLoadTimestamp);
+	}
+	if (QueuesManager.manager.captureCannedResponses) {
+		QueuesManager.manager.cannedResponses.dataLoadTimestamp = dataLoadTimestamp;
+	}
 
 	MergeQueuesSettings.settings.readFromPage();
 	MergeQueuesSettings.settings.applyToQueuesManager();
@@ -675,13 +883,13 @@ async function startAutoLoadQueuesButton() {
 
 function stopAutoLoadQueuesButton() {
 	QueuesManager.manager.autoLoadActive = false;
-	var activeTimeoutId = QueuesManager.manager.pendingAutoLoadTimeoutId;
+	const activeTimeoutId = QueuesManager.manager.pendingAutoLoadTimeoutId;
 	if (activeTimeoutId !== undefined) {
 		clearTimeout(activeTimeoutId);
 		QueuesManager.manager.pendingAutoLoadTimeoutId = undefined;
 	}
 
-	var activeFailesafeTimeoutId = QueuesManager.manager.failsafeStopAutoLoadTimeoutId;
+	const activeFailesafeTimeoutId = QueuesManager.manager.failsafeStopAutoLoadTimeoutId;
 	if (activeFailesafeTimeoutId !== undefined) {
 		clearTimeout(activeFailesafeTimeoutId);
 		QueuesManager.manager.failsafeStopAutoLoadTimeoutId = undefined;
