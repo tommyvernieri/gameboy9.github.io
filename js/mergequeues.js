@@ -120,6 +120,22 @@ class QueuesManager {
 		this.queueSummaryDisplay = document.createElement("div");
 
 		var arenaKeys = Array.from(this.mergedArenas.keys());
+
+		// Sort the queues by the provided arena order
+		const arenaOrderList = this.arenaOrder.split(",").map(s => s.trim()).filter(s => s !== "");
+		if (arenaOrderList.length > 0) {
+			arenaKeys.sort((arenaIdA, arenaIdB) => {
+				var indexOfA = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdA).startsWith(arenaPrefix));
+				var indexOfB = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdB).startsWith(arenaPrefix));
+				if (indexOfA === -1 && indexOfB === -1) return 0;
+				if (indexOfA === -1) return 1;
+				if (indexOfB === -1) return -1;
+				if (indexOfA > indexOfB) return 1;
+				if (indexOfA < indexOfB) return -1;
+				return 0;
+			});
+		}
+
 		var queueCount = arenaKeys.length;
 		var queueKey = undefined;
 		var queueItem = undefined;
@@ -185,14 +201,28 @@ class QueuesManager {
 
 		// Hold new elements outside of the DOM until they are ready to display
 		this.queueDisplay = document.createElement("div");
-		// this.queueDisplay.classList.add("w3-flex");
-		// this.queueDisplay.classList.add("queue-list-flex");
 		this.queueDisplay.classList.add("w3-grid");
 		this.queueDisplay.classList.add("queue-list-grid-3");
 
-		for (const [queueKey, queueItem] of Object.entries(this.queues)) {
+		var arenaKeys = Object.keys(this.queues);
+		// Sort the queues by the provided arena order
+		const arenaOrderList = this.arenaOrder.split(",").map(s => s.trim()).filter(s => s !== "");
+		if (arenaOrderList.length > 0) {
+			arenaKeys.sort((arenaIdA, arenaIdB) => {
+				var indexOfA = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdA).startsWith(arenaPrefix));
+				var indexOfB = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdB).startsWith(arenaPrefix));
+				if (indexOfA === -1 && indexOfB === -1) return 0;
+				if (indexOfA === -1) return 1;
+				if (indexOfB === -1) return -1;
+				if (indexOfA > indexOfB) return 1;
+				if (indexOfA < indexOfB) return -1;
+				return 0;
+			});
+		}
+
+		for (const queueKey of arenaKeys) {
+			const queueItem = this.queues[queueKey];
 			var queueFlexItem = document.createElement("div");
-			// queueFlexItem.classList.add("queue-flex");
 			queueFlexItem.classList.add("rounded-box");
 			queueFlexItem.classList.add("w3-border-blue");
 			queueFlexItem.classList.add("w3-card");
@@ -440,6 +470,7 @@ class MergeQueuesSettings {
 	static getTournamentShortNameAEl = () => document.getElementById("tournamentShortNameA");
 	static getTournamentIdBEl = () => document.getElementById("tournamentIdB");
 	static getTournamentShortNameBEl = () => document.getElementById("tournamentShortNameB");
+	static getArenaOrderEl = () => document.getElementById("arenaOrder");
 
 	hasRequiredMatchPlayApiKey() {
 		const keyIsBlank = (this.settingsValues.matchPlayApiKey?.trim() ?? "") === "";
@@ -472,6 +503,7 @@ class MergeQueuesSettings {
 		currentSavedSettingsValues.tournamentShortNameA = this.settingsValues.tournamentShortNameA;
 		currentSavedSettingsValues.tournamentIdB = this.settingsValues.tournamentIdB;
 		currentSavedSettingsValues.tournamentShortNameB = this.settingsValues.tournamentShortNameB;
+		currentSavedSettingsValues.arenaOrder = this.settingsValues.arenaOrder;
 		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
 	}
 
@@ -482,6 +514,7 @@ class MergeQueuesSettings {
 		delete currentSavedSettingsValues.tournamentShortNameA;
 		delete currentSavedSettingsValues.tournamentIdB;
 		delete currentSavedSettingsValues.tournamentShortNameB;
+		delete currentSavedSettingsValues.arenaOrder;
 		localStorage.setItem(MergeQueuesSettings.getStorageItemKey(), JSON.stringify(currentSavedSettingsValues));
 	}
 
@@ -505,6 +538,7 @@ class MergeQueuesSettings {
 		this.settingsValues.tournamentShortNameA = MergeQueuesSettings.getTournamentShortNameAEl().value;
 		this.settingsValues.tournamentIdB = parseInt(MergeQueuesSettings.getTournamentIdBEl().value);
 		this.settingsValues.tournamentShortNameB = MergeQueuesSettings.getTournamentShortNameBEl().value;
+		this.settingsValues.arenaOrder = MergeQueuesSettings.getArenaOrderEl().value;
 	}
 
 	writeToPage() {
@@ -513,6 +547,7 @@ class MergeQueuesSettings {
 		MergeQueuesSettings.getTournamentShortNameAEl().value = this.settingsValues.tournamentShortNameA ?? "";
 		MergeQueuesSettings.getTournamentIdBEl().value = this.settingsValues.tournamentIdB ?? "";
 		MergeQueuesSettings.getTournamentShortNameBEl().value = this.settingsValues.tournamentShortNameB ?? "";
+		MergeQueuesSettings.getArenaOrderEl().value = this.settingsValues.arenaOrder ?? "";
 	}
 
 	applyToQueuesManager() {
@@ -525,6 +560,8 @@ class MergeQueuesSettings {
 			[this.settingsValues.tournamentIdA]: this.settingsValues.tournamentShortNameA,
 			[this.settingsValues.tournamentIdB]: this.settingsValues.tournamentShortNameB
 		};
+
+		QueuesManager.manager.arenaOrder = this.settingsValues.arenaOrder;
 	}
 
 }

@@ -16,21 +16,14 @@
 			white-space: nowrap;
 		}
 
+		.input-wide {
+			width: 400px;
+			max-width: 60%;
+		}
+
 		/* Used in mergequeues.js */
 		.queue-list-grid-3 {
-			grid-template-columns:auto auto auto;
-		}
-
-		/* Used in mergequeues.js */
-		.queue-list-flex {
-			flex-wrap: wrap;
-		}
-
-		/* Used in mergequeues.js */
-		.queue-flex {
-			flex-grow: 0;
-			flex-shrink: 0;
-			flex-basis: 444px;
+			grid-template-columns: auto auto auto;
 		}
 
 		/* Used in mergequeues.js */
@@ -41,6 +34,7 @@
 			margin: 6px;
 		}
 
+		/* Used in mergequeues.js */
 		.rounded-box > .w3-container {
 			padding-left: 8px;
 			padding-right: 8px;
@@ -93,6 +87,12 @@
 		<div class="w3-container w3-row" style="margin-top: 8px;">
 			<label for="tournamentShortNameB">Queue name: </label>
 			<input type="text" id="tournamentShortNameB" name="tournamentShortNameB" />
+			(optional)
+		</div>
+
+		<div class="w3-container w3-row" style="margin-top: 16px;">
+			<label for="arenaOrder">Arena order: </label>
+			<input type="text" class="input-wide" id="arenaOrder" name="arenaOrder" title="A comma separate list of arena names (or partial arena names). Example: Jurassic Park (Pro), The Addam, Jurassic Park (Prem, Galaxy" />
 			(optional)
 		</div>
 		<div class="w3-container w3-row" style="margin-top: 8px;">
