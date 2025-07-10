@@ -8,7 +8,7 @@ From PowerShell:
 ```
 npm install -g local-web-server
 cd C:\Path\To\gameboy9.github.io\
-ws --spa mergequeues.html
+ws --spa index.html
 ```
 
 Browse to: http://machine-name:8000
