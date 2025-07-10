@@ -19,6 +19,24 @@ class QueuesManager {
 		this.queueDisplay = undefined;
 		this.lastLoadTournamentInfoTimestamp = undefined;
 		this.loadTournamentInfoNeeded = true;
+		this.arenaOrder = "";
+	}
+
+	sortKeysByArenaOrder(arenaKeys) {
+		// Sort the queues by the provided arena order
+		const arenaOrderList = this.arenaOrder.split(",").map(s => s.trim()).filter(s => s !== "");
+		if (arenaOrderList.length > 0) {
+			arenaKeys.sort((arenaIdA, arenaIdB) => {
+				var indexOfA = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdA).startsWith(arenaPrefix));
+				var indexOfB = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdB).startsWith(arenaPrefix));
+				if (indexOfA === -1 && indexOfB === -1) return 0;
+				if (indexOfA === -1) return 1;
+				if (indexOfB === -1) return -1;
+				if (indexOfA > indexOfB) return 1;
+				if (indexOfA < indexOfB) return -1;
+				return 0;
+			});
+		}
 	}
 
 	getArenaName(arenaId) {
@@ -120,21 +138,8 @@ class QueuesManager {
 		this.queueSummaryDisplay = document.createElement("div");
 
 		var arenaKeys = Array.from(this.mergedArenas.keys());
+		this.sortKeysByArenaOrder(arenaKeys);
 
-		// Sort the queues by the provided arena order
-		const arenaOrderList = this.arenaOrder.split(",").map(s => s.trim()).filter(s => s !== "");
-		if (arenaOrderList.length > 0) {
-			arenaKeys.sort((arenaIdA, arenaIdB) => {
-				var indexOfA = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdA).startsWith(arenaPrefix));
-				var indexOfB = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdB).startsWith(arenaPrefix));
-				if (indexOfA === -1 && indexOfB === -1) return 0;
-				if (indexOfA === -1) return 1;
-				if (indexOfB === -1) return -1;
-				if (indexOfA > indexOfB) return 1;
-				if (indexOfA < indexOfB) return -1;
-				return 0;
-			});
-		}
 
 		var queueCount = arenaKeys.length;
 		var queueKey = undefined;
@@ -205,20 +210,7 @@ class QueuesManager {
 		this.queueDisplay.classList.add("queue-list-grid-3");
 
 		var arenaKeys = Object.keys(this.queues);
-		// Sort the queues by the provided arena order
-		const arenaOrderList = this.arenaOrder.split(",").map(s => s.trim()).filter(s => s !== "");
-		if (arenaOrderList.length > 0) {
-			arenaKeys.sort((arenaIdA, arenaIdB) => {
-				var indexOfA = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdA).startsWith(arenaPrefix));
-				var indexOfB = arenaOrderList.findIndex(arenaPrefix => QueuesManager.manager.getArenaName(arenaIdB).startsWith(arenaPrefix));
-				if (indexOfA === -1 && indexOfB === -1) return 0;
-				if (indexOfA === -1) return 1;
-				if (indexOfB === -1) return -1;
-				if (indexOfA > indexOfB) return 1;
-				if (indexOfA < indexOfB) return -1;
-				return 0;
-			});
-		}
+		this.sortKeysByArenaOrder(arenaKeys);
 
 		for (const queueKey of arenaKeys) {
 			const queueItem = this.queues[queueKey];
