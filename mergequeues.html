@@ -12,6 +12,12 @@
 			white-space: nowrap;
 		}
 
+		.clip {
+			overflow: hidden;
+			text-overflow: clip;
+			white-space: nowrap;
+		}
+
 		.nowrap {
 			white-space: nowrap;
 		}
@@ -76,7 +82,7 @@
 		</div>
 		<div class="w3-container w3-row" style="margin-top: 8px;">
 			<label for="tournamentShortNameA">Queue name: </label>
-			<input type="text" id="tournamentShortNameA" name="tournamentShortNameA" />
+			<input type="text" id="tournamentShortNameA" name="tournamentShortNameA" title="Tournament name will be used if no short name is provided or you can enter a space for a blank queue name." />
 			(optional)
 		</div>
 		
@@ -86,8 +92,24 @@
 		</div>
 		<div class="w3-container w3-row" style="margin-top: 8px;">
 			<label for="tournamentShortNameB">Queue name: </label>
-			<input type="text" id="tournamentShortNameB" name="tournamentShortNameB" />
+			<input type="text" id="tournamentShortNameB" name="tournamentShortNameB" title="Tournament name will be used if no short name is provided or you can enter a space for a blank queue name." />
 			(optional)
+		</div>
+
+		<div class="w3-container w3-row" style="margin-top: 16px;">
+			<input class="w3-check" type="checkbox" id="usePrefixForSummaryPlayerNames" name="usePrefixForSummaryPlayerNames" />
+			<label for="tournamentIdB">Include first letter of the queue name in the Queue Summary section</label>
+		</div>
+		<div class="w3-container w3-row" style="margin-top: 8px;">
+			<label>Display:</label><br />
+			<input class="w3-radio" type="radio" id="sectionsToDisplay-details" name="sectionsToDisplay" value="details" />
+			<label for="sectionsToDisplay-details">Details</label>
+			<br />
+			<input class="w3-radio" type="radio" id="sectionsToDisplay-summary" name="sectionsToDisplay" value="summary" />
+			<label for="sectionsToDisplay-summary">Summary</label>
+			<br />
+			<input class="w3-radio" type="radio" id="sectionsToDisplay-both" name="sectionsToDisplay" value="both" checked />
+			<label for="sectionsToDisplay-both">Both</label>
 		</div>
 
 		<div class="w3-container w3-row" style="margin-top: 16px;">
@@ -104,12 +126,13 @@
 
 	<div class="w3-row w3-container" style="margin-top: 16px;">
 		<button class="w3-button w3-green w3-hover-black w3-round" type="button" id="loadQueuesButton" onclick="loadQueuesButton()">Load Queues</button>
-		<button class="w3-button w3-pale-red w3-hover-black w3-round" type="button" id="loadPlayersButton" onclick="loadPlayersButton()">Load Missing Players</button>
-		<button class="w3-button w3-pale-green w3-hover-black w3-round" type="button" id="startAutoLoadButton" onclick="startAutoLoadQueuesButton()">Start Auto-refresh</button>
+		<button class="w3-button w3-pale-red w3-hover-black w3-round" type="button" id="loadPlayersButton" onclick="loadPlayersButton()" title="Loads names for newly added players and arenas. Also updates arena deactivaed/blocked/closed status. Use this only when needed.">Load Missing Players</button>
+		<button class="w3-button w3-pale-green w3-hover-black w3-round" type="button" id="startAutoLoadButton" onclick="startAutoLoadQueuesButton()" title="Loads queues every 30 seconds and loads missing tournaments and arenas as needed">Start Auto-refresh</button>
 		<button class="w3-button w3-pale-blue w3-hover-black w3-round w3-hide" type="button" id="stopAutoLoadButton" onclick="stopAutoLoadQueuesButton()">Stop Auto-refresh</button>
-		<span class="nowrap w3-hide" id="lastUpdated">Last updated: never</span>
 		<button class="w3-button w3-dark-grey w3-hover-black w3-round w3-hide" type="button" id="showParametersButton" onclick="showParameters()">Show Parameters</button>
 		<button class="w3-button w3-dark-grey w3-hover-black w3-round" type="button" id="hideParametersButton" onclick="hideParameters()">Hide Parameters</button>
+		<br />
+		<span class="nowrap w3-hide" id="lastUpdated">Last updated: never</span>
 		<div class="w3-container w3-row w3-text-red w3-hide" id="rateLimitedRequestMessage">
 			Your requests have been rate limited by the Match Play Events API. This message will disappear in 1 minute
 			when the rate limit expires. If you are rapidly clicking the load buttons, please slow down. If you are have
@@ -135,7 +158,7 @@
 		<div class="w3-col s1 m1 l1 w3-border-top w3-center"></div>
 		<div class="w3-col s5 m5 l5 w3-border-top truncate"></div>
 		<div class="w3-col s3 m3 l3 w3-border-top truncate"></div>
-		<div class="w3-col s3 m3 l3 w3-border-top w3-right-align truncate"></div>
+		<div class="w3-col s3 m3 l3 w3-border-top w3-right-align clip"></div>
 	</div>
 
 	<div class="w3-row w3-container w3-hide" style="margin-top: 16px;" id="queueSummaryTitle">
