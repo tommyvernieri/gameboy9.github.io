@@ -1,2 +1,14 @@
 # gameboy9.github.io
-Personal page
+Calculators and tools for IFPA pinball tournaments.
+
+### Local testing
+
+From PowerShell:
+
+```
+npm install -g local-web-server
+cd C:\Path\To\gameboy9.github.io\
+ws --spa index.html
+```
+
+Browse to: http://machine-name:8000

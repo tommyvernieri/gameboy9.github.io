@@ -7,7 +7,7 @@ class Player {
 	}
 }
 
-function calcKnockoutTournament(players, groupCount, rounds, p21, p22, p31, p32, p33, p41, p42, p43, p44, ABye, AQual, BQual, CQual, DQual) {	
+function calcKnockoutTournament(players, groupSize, rounds, p21, p22, p31, p32, p33, p41, p42, p43, p44, ABye, AQual, BQual, CQual, DQual) {	
 	let strikeDist = [ 
 		[ p21, p22, p22, p22], 
 		[ p31, p32, p33, p33], 
@@ -31,10 +31,7 @@ function calcKnockoutTournament(players, groupCount, rounds, p21, p22, p31, p32,
 	let lowScore = 10000000.0;
 
 	let playerList = [];
-	let roundResult = [];
-	let finalEndPlayers = [];
 	let playerGames = [ 0, 0, 0 ];
-	let firstIteration = "";
 	let survivingPlayers = players;
 	let iterations = 10000;
 
@@ -119,6 +116,12 @@ function calcKnockoutTournament(players, groupCount, rounds, p21, p22, p31, p32,
 	BQualDist.sort(function(a, b) { return a - b; });
 	CQualDist.sort(function(a, b) { return a - b; });
 	DQualDist.sort(function(a, b) { return a - b; });
+
+	// Before we report the results, let's calculate TGP and certified eligibility.
+	let p3Games = p3GameCalc(players, groupSize);
+	let p4Games = p4GameCalc(players, groupSize, p3Games);
+	// mGamesCalc is from mpfinals.js; the first parameter is 100%.
+	let mGames = mGamesCalc(1, rounds, p3Games, p4Games, groupSize);
 	
 	document.getElementById("MaxPoints").innerHTML = rounds * Math.max(p21, p22, p31, p32, p33, p41, p42, p43, p44);
 	document.getElementById("ATopAvg").innerHTML = average(ATopDist);
@@ -133,6 +136,13 @@ function calcKnockoutTournament(players, groupCount, rounds, p21, p22, p31, p32,
 	document.getElementById("BQual95").innerHTML = BQualDist[pct5] + " / " + BQualDist[pct95];
 	document.getElementById("CQual95").innerHTML = CQualDist[pct5] + " / " + CQualDist[pct95];
 	document.getElementById("DQual95").innerHTML = DQualDist[pct5] + " / " + DQualDist[pct95];
+
+	document.getElementById("TGP").innerHTML = 
+		(p3Games >= p4Games ? "<font color='red'>" : "") + 
+		(mGames > 50 ? "200.00% (maxed - " + (Math.round(mGames) * 4).toFixed(2) + "%" : (Math.round(mGames) * 4).toFixed(2) + "%") + 
+		(mGames > 25 ? " *" : "") +
+		(p3Games >= p4Games ? " (?)</font>" : "");
+	document.getElementById("Certified").innerHTML = (players >= 48 && mGames >= 40 ? (players >= 128 ? "Yes (150% ***)" : "Yes (125%)") : "No");
 }
 
 function tgpButton() {
@@ -167,4 +177,19 @@ function average(numbers)
 		sum += numbers[i];
 	}
 	return sum / numbers.length;
+}
+
+function p3GameCalc(players, groupSize) {
+	return (players % groupSize == 0 ? 0 : groupSize - (players % groupSize));
+}
+
+function p4GameCalc(players, groupSize, p3Games) {
+	return Math.ceil(players / groupSize) - p3Games;
+}
+
+function mGamesCalc(portion, roundGames, p3Games, p4Games, groupSize) {
+	if (p3Games >= p4Games) 
+		return portion * roundGames * (groupSize == 3 ? 1.0 : 1.5);
+	else
+		return portion * roundGames * (groupSize == 3 ? 1.5 : 2.0);
 }

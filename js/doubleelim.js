@@ -231,6 +231,7 @@ function calcDoubleElimTournament(players, evWinnersRound, evLosersRound) {
 	let ev = calcInterpolatedDoubleElimTournament(players, evWinnersRound, evLosersRound);
 	document.getElementById("MeaningfulGames").innerHTML = ev.toFixed(3);
 	document.getElementById("ApproxTGP").innerHTML = (ev * 4 > 100 ? "100.00% (maxed - " + (ev * 4).toFixed(2) + "%)" : (ev * 4).toFixed(2) + "%");
+	document.getElementById("Certified").innerHTML = (players >= 24 && evWinnersRound >= 4 ? "Yes" : "No");
 }
 
 function validateParameters() {
