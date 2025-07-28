@@ -142,6 +142,7 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 		document.getElementById("AvgPlayers").innerHTML = endPlayersAvg.toFixed(2);
 		document.getElementById("ExtremePlayers").innerHTML = Math.min(...finalEndPlayers) + " / " + Math.max(...finalEndPlayers);
 		document.getElementById("ReasonablePlayers").innerHTML = finalEndPlayers[pct5] + " / " + finalEndPlayers[pct95];
+		document.getElementById("AvgCutLabel").innerHTML = `Avg Round ${startRound + 1} players`;
 		document.getElementById("AvgCut").innerHTML = cutPlayersAvg.toFixed(2);
 		document.getElementById("ExtremeCut").innerHTML = Math.min(...firstCutPlayers) + " / " + Math.max(...firstCutPlayers);
 		document.getElementById("ReasonableCut").innerHTML = firstCutPlayers[pct5] + " / " + firstCutPlayers[pct95];
@@ -152,11 +153,13 @@ function calcKnockoutTournament(players, groupCount, startRound, finalStrikes, f
 		minRounds: Math.min(...roundResult),
 		maxRounds: Math.max(...roundResult),
 		pct5Rounds: roundResult[pct5],
-		pct95Rounds: roundResult[pct95]
+		pct95Rounds: roundResult[pct95],
+		minMeaningfulGames: Math.min(...mGamesList),
+		maxMeaningfulGames: Math.max(...mGamesList)
 	};
 }
 
-function calcKnockoutTournamentOptimalPace(minPlayers, maxRoundsLimit, players, groupCount, startRound, finalStrikes, finalPlayers, paceIncrement, p21, p22, p31, p32, p33, p41, p42, p43, p44, type) {
+function calcKnockoutTournamentOptimalPace(minPlayers, minTgp, maxRoundsLimit, players, groupCount, startRound, finalStrikes, finalPlayers, paceIncrement, p21, p22, p31, p32, p33, p41, p42, p43, p44, type) {
 
 	// Step through the number of players and the number of strikes to find the combination that
 	// minimizes the starting pace while keeping the total number of rounds below the max rounds limit
@@ -178,13 +181,15 @@ function calcKnockoutTournamentOptimalPace(minPlayers, maxRoundsLimit, players, 
         const playersProcessed = players - testPlayers + 0.5;
         postMessage({ progress: playersProcessed * progressPerPlayer });
 		// Starting point has either been constructed to be the minimum possible number of rounds
-		// or is from the previous larget player count which suppoted this number of strikes
+		// or is from the previous target player count which supported this number of strikes
 		strikesRecommendations[testPlayers] = prevStrikes;
 		for (let testStrikes = prevStrikes; testStrikes >= 0; testStrikes--) {
 			let calcResult = calcKnockoutTournament(testPlayers, groupCount, startRound, testStrikes, finalPlayers, paceIncrement, p21, p22, p31, p32, p33, p41, p42, p43, p44, type);
 
-			if (calcResult.maxRounds > maxRoundsLimit) {
+			if (maxRoundsLimit !== undefined && calcResult.maxRounds > maxRoundsLimit) {
 				// Passed the max rounds limit, move on to the next player count
+				break;
+			} else if (minTgp !== undefined && calcResult.minMeaningfulGames >= minTgp) {
 				break;
 			} else {
 				// Latest best values

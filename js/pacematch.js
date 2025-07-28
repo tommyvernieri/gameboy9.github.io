@@ -1,3 +1,5 @@
+const SharedWorker = {};
+
 function fillStrikes() {
 	let value = document.getElementById("commonFormats").value;
 	if (value === "1") 
@@ -73,9 +75,7 @@ function optimalPaceButton() {
 		return;
 	}
 
-	const myWorker = new Worker("js/calcknockout.js");
-
-	myWorker.onmessage = (e) => {
+	SharedWorker.worker.onmessage = (e) => {
 		const messageData = e.data;
 		const progress = e.data.progress;
 		const playerRangeRecommendations = e.data.playerRangeRecommendations;
@@ -103,10 +103,19 @@ function optimalPaceButton() {
 
 	};
 
+	let maxRounds, minTgp;
+	if (document.getElementById("optimizedMaxRoundsOption").checked) {
+		maxRounds = parseInt(document.getElementById("maxRounds").value);
+	}
+	if (document.getElementById("optimizedMinTgpOption").checked) {
+		minTgp = parseInt(document.getElementById("minTgp").value);
+	}
+
 	console.log("Posting initial message posted to worker");
-	myWorker.postMessage([
+	SharedWorker.worker.postMessage([
 		parseInt(document.getElementById("playerCountLow").value),
-		parseInt(document.getElementById("maxRounds").value),
+		minTgp,
+		maxRounds,
 		parseInt(document.getElementById("playerCount").value),
 		parseInt(document.getElementById("groupCount").value),
 		parseInt(document.getElementById("paceRound").value),
@@ -125,28 +134,52 @@ function optimalPaceButton() {
 		0]);
 }
 
-function showDetailed() {
-	for (const element of document.getElementsByClassName("optimized-only")) {
+function updateTgpConversion() {
+	const tgpGamesInput = parseFloat(document.getElementById("minTgp").value);
+	const tgpPercentage = tgpGamesInput * 4;
+	document.getElementById("tgpConversion").textContent = ` (${tgpGamesInput} games towards TGP is ${tgpPercentage}% TGP)`;
+}
+
+function hideByClassName(className) {
+	for (const element of document.getElementsByClassName(className)) {
 		element.classList.add("w3-hide");
 	}
-	for (const element of document.getElementsByClassName("detailed-only")) {
+}
+
+function showByClassName(className) {
+	for (const element of document.getElementsByClassName(className)) {
 		element.classList.remove("w3-hide");
 	}
 }
 
-function showOptimized() {
-	for (const element of document.getElementsByClassName("optimized-only")) {
-		element.classList.remove("w3-hide");
-	}
-	for (const element of document.getElementsByClassName("detailed-only")) {
-		element.classList.add("w3-hide");
-	}
+function showDetailed() {
+	hideByClassName("optimized-only");
+	hideByClassName("rounds-optimized-only");
+	hideByClassName("tgp-optimized-only");
+	showByClassName("detailed-only");
+}
+
+function showOptimizedMaxRounds() {
+	showByClassName("optimized-only");
+	showByClassName("rounds-optimized-only");
+	hideByClassName("tgp-optimized-only");
+	hideByClassName("detailed-only");
+}
+
+function showOptimizedMinTgp() {
+	showByClassName("optimized-only");
+	hideByClassName("rounds-optimized-only");
+	showByClassName("tgp-optimized-only");
+	hideByClassName("detailed-only");
+	updateTgpConversion();
 }
 
 function handleLoad() {
 	if (window.Worker) {
 		// Web Workers are supported
+		SharedWorker.worker = new Worker("js/calcknockout.js");
 	} else {
-		document.getElementById("optimizedOption").disabled = true;
+		document.getElementById("optimizedMaxRoundsOption").disabled = true;
+		document.getElementById("optimizedMinTgpOption").disabled = true;
 	}
 }

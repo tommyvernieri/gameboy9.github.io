@@ -7,15 +7,17 @@
     <title>IFPA Calculators - Pace Matchplay</title>
 </head>
 
-<body>
+<body onload="handleLoad()">
 	<div w3-include-html="menu.html"></div>
 	
 	<div class="w3-container w3-row" style="margin-top: 64px;">
 		<span>Calculation: </span><br />
 		<input type="radio" id="detailedOnlyOption" name="calculationType" onclick="showDetailed()" checked />
 		<label for="detailedOnlyOption">One detailed scenario</label><br />
-		<input type="radio" id="optimizedOption" name="calculationType" onclick="showOptimized()" />
-		<label for="optimizedOption">Optimize for a maximum rounds limit</label>
+		<input type="radio" id="optimizedMaxRoundsOption" name="calculationType" onclick="showOptimizedMaxRounds()" />
+		<label for="optimizedMaxRoundsOption">Optimize for a maximum rounds limit</label><br />
+		<input type="radio" id="optimizedMinTgpOption" name="calculationType" onclick="showOptimizedMinTgp()" />
+		<label for="optimizedMinTgpOption">Optimize for a minimum TGP threshold</label>
 	</div>
 
 	<div class="w3-container w3-row" style="margin-top: 16px;">
@@ -25,11 +27,18 @@
 		<label for="playerCount">contestants in </label>
 		<input type="number" id="groupCount" name="groupCount" min="2" max="4" value="4" />
 		<label for="playerCount"> player groups. The pace starts at </label>
+
 		<input type="number" id="strikes" name="strikes" min="1" max="1000" value="30" class="detailed-only"/>
 		<label for="paceRound" class="detailed-only">points. </label> 
-		<label for="maxRounds" class="optimized-only w3-hide">the lowest number of points that still guarantees the final player count is reached within</label>
-		<input type="number" id="maxRounds" name="maxRounds" min="1" max="50" value="13" class="optimized-only w3-hide" />
-		<label for="maxRounds" class="optimized-only w3-hide">rounds. </label>
+
+		<label for="maxRounds" class="rounds-optimized-only w3-hide">the lowest number of points that still guarantees the final player count is reached within</label>
+		<input type="number" id="maxRounds" name="maxRounds" min="1" max="50" value="13" class="rounds-optimized-only w3-hide" />
+		<label for="maxRounds" class="rounds-optimized-only w3-hide">rounds. </label>
+
+		<label for="minTgp" class="tgp-optimized-only w3-hide">the lowest number of points that still guarantees the final player count is reached after achieving at least</label>
+		<input type="number" id="minTgp" name="minTgp" min="1" max="50" step="0.5" value="25" class="tgp-optimized-only w3-hide" oninput="updateTgpConversion()" />
+		<label for="maxRounds" class="tgp-optimized-only w3-hide">games towards TGP<span id="tgpConversion"> (25 games towards TGP is 100% TGP)</span>. </label>
+
 		<label for="paceRound">The initial pace is applied after round </label>
 		<input type="number" id="paceRound" name="paceRound" min="1" max="100" value="7" />
 		<span>.  The pace will increase by </span>
@@ -114,7 +123,7 @@
 			<div class="w3-col s4 m4 l1 w3-right-align w3-border-bottom" id="ReasonableRounds">&nbsp;</div>
 		</div>
 		<div class="w3-row w3-container">
-			<div class="w3-col s4 m4 l2">Avg 1st cut players</div>
+			<div class="w3-col s4 m4 l2" id="AvgCutLabel">Avg 1st cut players</div>
 			<div class="w3-col s4 m4 l1 w3-right-align" id="AvgCut"></div>
 		</div>
 		<div class="w3-row w3-container">
