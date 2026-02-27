@@ -85,11 +85,22 @@ class QueuesManager {
 	constructor(matchPlayApiKey, ...tournamentIdList) {
 		this.matchPlayApiKey = matchPlayApiKey;
 		this.tournamentIdList = tournamentIdList;
+		
+		// TODO remove this hack later
+		this.alternateRowClasses = {};
+		if (this.tournamentIdList?.length > 0) {
+			this.alternateRowClasses[this.tournamentIdList[1]] = "w3-purple";
+		}
+
 		this.queues = {};
+		this.standingsCollection = {};
+		this.standingsCategories = [];
+		this.standingsIndex = 0;
 		this.tournamentInfo = {};
 		this.arenaSummary = [];
 		this.mergedArenas = new Map();
 		this.queueDisplay = undefined;
+		this.standingsDisplay = undefined;
 		this.lastLoadTournamentInfoTimestamp = undefined;
 		this.lastLoadTournamentInfoAttemptTimestamp = undefined;
 		this.loadTournamentInfoNeeded = true;
@@ -101,6 +112,9 @@ class QueuesManager {
 
 	clearAllData() {
 		this.queues = {};
+		this.standingsCollection = {};
+		this.standingsCategories = [];
+		this.standingsIndex = 0;
 		this.tournamentInfo = {};
 		this.arenaSummary = [];
 		this.mergedArenas = new Map();
@@ -387,7 +401,8 @@ class QueuesManager {
 							rowPrefix: rowNumber,
 							mainLabel: playerName,
 							queueName: queueName,
-							waitingTime: waitingTime
+							waitingTime: waitingTime,
+							alternateRowClass: this.alternateRowClasses[queuedPlayer.tournamentId] 
 						});
 					}
 
@@ -401,6 +416,9 @@ class QueuesManager {
 					const queueRow = rowTemplate.cloneNode(true);
 					queueRow.id = arenaInfo.arenaId + "-" + rowIndex;
 					queueRow.classList.remove("w3-hide");
+					if (queueEntry.alternateRowClass !== undefined) {
+						queueRow.classList.add(queueEntry.alternateRowClass);
+					}
 					const queueRowCols = queueRow.getElementsByTagName("div");
 					queueRowCols[0].textContent = queueEntry.rowPrefix; 
 					queueRowCols[1].textContent = queueEntry.mainLabel;
@@ -446,6 +464,102 @@ class QueuesManager {
 		}
 	}
 
+	async displayStandings() {
+		if (this.standingsDisplay !== undefined) {
+			// Cleanup old elements
+			this.standingsDisplay.remove();
+		}
+
+		// Bail early if this content should not be displayed
+		// Only displaying standins if queue details are displayed
+		if (!this.displayDetails) {
+			return;
+		}
+
+		let standingsCategoryKey = undefined;
+
+		// Determine which standings to show and increment the index so the next standings are shown next time
+		if (this.standingsIndex == 0 || this.standingsIndex > Object.keys(this.standingsCategories).length) {
+			// Display the overall tournament standings
+			standingsCategoryKey = undefined;
+			// Reset the standings index in the case where it's past the end of the standingsCategories list
+			this.standingsIndex = 0;
+		} else {
+			// Display the standings for the label at the current index - 1
+			standingsCategoryKey = Object.keys(this.standingsCategories)[this.standingsIndex - 1];
+		}
+		// Increment to prepare for the next time through the loop.
+		this.standingsIndex++;
+
+		const nameTemplate = document.getElementById("standingsNameTemplate");
+		const headerTemplate = document.getElementById("standingsHeaderTemplate");
+		const rowTemplate = document.getElementById("standingsRowTemplate");
+
+		// Hold new elements outside of the DOM until they are ready to display
+		this.standingsDisplay = document.createElement("div");
+		this.standingsDisplay.classList.add("w3-grid");
+		this.standingsDisplay.classList.add("queue-list-grid-3");
+
+		for (const tournamentId of Object.values(this.tournamentIdList)) {
+			let standingsData = undefined;
+			let name = undefined;
+			if (standingsCategoryKey === undefined) {
+				// We are displaying the overall tournament standings
+				standingsData = this.standingsCollection[tournamentId];
+				name = this.getQueueName(tournamentId) + " Standings";
+			} else {
+				let standingsKey = tournamentId + "-" + standingsCategoryKey;
+				standingsData = this.standingsCollection[standingsKey];
+				name = this.getQueueName(tournamentId) + " " + this.standingsCategories[standingsCategoryKey].heading + " Standings";
+			}
+
+			// Skip this tournament if it does not have standings for this label
+			if (standingsData !== undefined) {
+				const queueFlexItem = document.createElement("div");
+				queueFlexItem.classList.add("rounded-box");
+				queueFlexItem.classList.add("w3-border-deep-orange");
+				queueFlexItem.classList.add("w3-card");
+				this.standingsDisplay.appendChild(queueFlexItem);
+
+				const queueName = nameTemplate.cloneNode(true);
+				queueName.id = tournamentId + '-standingsname';
+				queueName.classList.remove("w3-hide");
+				queueName.getElementsByTagName("h4")[0].textContent = name;
+				queueFlexItem.appendChild(queueName);
+
+				const queueHeader = headerTemplate.cloneNode(true);
+				queueHeader.id = tournamentId + '-standingsheader';
+				queueHeader.classList.remove("w3-hide");
+				queueFlexItem.appendChild(queueHeader);
+
+				for (let rowIndex = 0; rowIndex < standingsData.length && rowIndex < 4; rowIndex++) {
+					const queueRow = rowTemplate.cloneNode(true);
+					queueRow.id = tournamentId + "-" + rowIndex;
+					queueRow.classList.remove("w3-hide");
+					const queueRowCols = queueRow.getElementsByTagName("div");
+					queueRowCols[0].textContent = standingsData[rowIndex].position; 
+					queueRowCols[1].textContent = await this.getPlayerName(tournamentId, standingsData[rowIndex].playerId);
+					queueRowCols[2].textContent = standingsData[rowIndex].points;
+					queueRowCols[3].textContent = standingsData[rowIndex].entriesPlayed;
+
+					// Hide top border after the first row
+					if (rowIndex > 0) {
+						Object.keys(queueRowCols).forEach(k => queueRowCols[k].classList.remove("w3-border-top"));
+					}
+
+					queueFlexItem.appendChild(queueRow);
+				}
+
+				// Add elements into the DOM in the existing queue display
+				while (this.standingsDisplay.firstChild) {
+					this.queueDisplay.appendChild(this.standingsDisplay.firstChild);
+				}
+				// Add elements into the DOM
+				//rowTemplate.insertAdjacentElement("afterend", this.standingsDisplay);
+			}
+		}
+	}
+
 	compareByCreatedAt(a, b) {
 		if (a.createdAt < b.createdAt) {
 			return -1;
@@ -465,6 +579,10 @@ class QueuesManager {
 
 	getQueuesUrl(tournamentId) {
 		return "https://app.matchplay.events/api/tournaments/" + tournamentId + "/queues";
+	}
+
+	getStandingsUrl(tournamentId) {
+		return "https://app.matchplay.events/api/tournaments/" + tournamentId + "/standings";
 	}
 
 	makeRequest(url) {
@@ -703,6 +821,65 @@ class QueuesManager {
         })
         .catch(error => {
             console.error('One or more load all queues requests failed:', error);
+            // Handle the error from the first rejected request
+        });
+	}
+
+	loadStandings() {
+		const requests = this.tournamentIdList.map(tournamentId => {
+			if (tournamentId !== undefined && tournamentId > 0) {
+				return this.makeRequest(this.getStandingsUrl(tournamentId));
+			} else {
+				return new Promise((resolve, reject) => {
+					resolve(undefined);
+				});
+			}
+		});
+
+		return Promise.all(requests)
+        .then(results => {
+            console.log('Load all standings requests succeeded:', results);
+            // Process the results from all successful requests
+			const jsonResults = results.map((r) => r === undefined ? undefined : JSON.parse(r));
+
+			// Clear previous standings
+			this.standingsCollection = {};
+			// TODO: Move to parameters
+			this.standingsCategories = {
+				"B1": {
+					heading: "Bounty 1"
+				},
+				"B2": {
+					heading: "Bounty 2"
+				},
+				"Junior": {
+					heading: "Juniors"
+				}
+			};
+
+			jsonResults.forEach((response, resultsIndex) => {
+				if (response !== undefined) {
+					console.log("Load standings response:");
+					console.dir(response);
+					let tournamentId = this.tournamentIdList[resultsIndex];
+
+					this.standingsCollection[tournamentId] = response;
+
+					response.forEach(standingsItem => {
+						let player = this.getPlayer(tournamentId, standingsItem.playerId);
+						Object.keys(this.standingsCategories).forEach(label => {
+							if (player?.tournamentPlayer?.labels.includes(label)) {
+								let standingsCollectionKey = tournamentId + "-" + label;
+								this.standingsCollection[standingsCollectionKey] ??= [];
+								this.standingsCollection[standingsCollectionKey].push(standingsItem);
+							}
+						});
+					});
+				}
+			});
+        })
+        .catch(error => {
+            console.error('One or more load standings requests failed:', error);
             // Handle the error from the first rejected request
         });
 	}
@@ -946,7 +1123,9 @@ async function loadQueuesButton() {
 
 	await QueuesManager.manager.loadTournamentInfoIfNeededWithDebounce();
 	await QueuesManager.manager.loadAllQueues();
+	await QueuesManager.manager.loadStandings();
 	await QueuesManager.manager.displayQueues(dataLoadTimestamp);
+	await QueuesManager.manager.displayStandings(dataLoadTimestamp);
 }
 
 async function loadPlayersButton() {
@@ -959,7 +1138,7 @@ async function loadPlayersButton() {
 }
 
 async function autoLoadQueuesAndRepeat() {
-	const delayTime = 1000 * 30; // 30 seconds
+	const delayTime = 1000 * 20; // 20 seconds
 
 	if (QueuesManager.manager.autoLoadActive) {
 		await loadQueuesButton();
